@@ -8,6 +8,43 @@ import BandWImage from "../assets/images/Black_and_White_Logo.png";
 import LHImage from "../assets/images/luckyhelmetlogo.png";
 import { Link } from 'react-router-dom';
 
+// const sparkle = keyframes`
+//   0%, 100% { opacity: 0.5; transform: scale(1); }
+//   50% { opacity: 1; transform: scale(1.3); }
+// `;
+
+// const StyledHomePage = styled.div`
+//   width: 100vw;
+//   min-height: 100vh;
+//   background: radial-gradient(circle at top right, #fff700 0%, #030f2d 70%) no-repeat;
+//   background-color: #030f2d;
+//   background-size: cover;
+//   display: flex;
+//   justify-content: center;
+//   overflow-x: hidden;
+//   position: relative;
+
+//   &::before {
+//     content: '';
+//     position: absolute;
+//     inset: 0;
+//     z-index: 0;
+//     pointer-events: none;
+//     background-image: 
+//       radial-gradient(2px 2px at 10% 20%, #fff 90%, transparent),
+//       radial-gradient(2px 2px at 25% 40%, #ffecb3 90%, transparent),
+//       radial-gradient(2px 2px at 40% 70%, #fffacd 90%, transparent),
+//       radial-gradient(2px 2px at 60% 30%, #fff 90%, transparent),
+//       radial-gradient(2px 2px at 80% 60%, #ffecb3 90%, transparent),
+//       radial-gradient(2px 2px at 90% 10%, #ffe082 90%, transparent),
+//       radial-gradient(2px 2px at 70% 90%, #fff 90%, transparent),
+//       radial-gradient(2px 2px at 50% 50%, #fffacd 90%, transparent);
+//     background-repeat: no-repeat;
+//     animation: ${sparkle} 4s ease-in-out infinite;
+//   }
+// `;
+
+
 const StyledHomePage = styled.div`
   width: 100vw;
   min-height: 100vh;
@@ -16,6 +53,7 @@ const StyledHomePage = styled.div`
   justify-content: center;
   overflow-x: hidden;
 `;
+
 
 const CenterWrapper = styled.div`
   width: 100%;

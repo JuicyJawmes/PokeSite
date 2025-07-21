@@ -3,6 +3,9 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import pokeballImage from "../assets/images/Pokeball.png";
 import LHImage from "../assets/images/luckyhelmetlogo.png";
+import svLogo from "../assets/images/Scarlet_Violet.png";
+import ssLogo from "../assets/images/sword_shield.png";
+import placeholderImg from "../assets/images/Pokeball.png";
 
 const StyledPage = styled.div`
   width: 100vw;
@@ -61,38 +64,40 @@ const Pokeball = styled.img`
   z-index: 2;
 `;
 
-const ProductBox = styled.div`
-  background: #1e1855;
-  border-radius: 41px;
-  margin: 2rem 0;
-  padding: 2rem;
-  max-width: 600px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
+const SectionLogo = styled.img`
+  width: 400px;
+  margin: 2rem 0 1rem 0;
 `;
 
-const InnerBox = styled.div`
-  background: white;
-  border-radius: 30px;
+const ProductGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  margin-bottom: 3rem;
+`;
+
+const ProductCard = styled.div`
+  background: #1e1855;
+  border-radius: 20px;
   padding: 2rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 2rem;
-  flex-wrap: wrap;
-  justify-content: center;
-  width: 100%;
 `;
 
 const ProductImage = styled.img`
-  width: 250px;
-  max-width: 100%;
+  width: 180px;
+  height: 180px;
+  background: white;
+  border-radius: 12px;
 `;
 
 const ProductText = styled.div`
-  font-size: 1.2rem;
+  font-size: 0.9rem;
   font-style: italic;
   font-weight: 900;
+  color: white;
+  margin-top: 2rem;
   text-align: center;
 `;
 
@@ -112,7 +117,31 @@ export const PacksPage = () => {
           <Link to="/contact" style={{ textDecoration: 'none' }}><NavItem>Contact</NavItem></Link>
         </NavBar>
 
+        <SectionLogo src={svLogo} alt="Scarlet & Violet" />
+        <ProductGrid>
+          {[1,2,3,4].map((_, i) => (
+            <ProductCard key={i}>
+              <ProductImage src={placeholderImg} alt={`SV Product ${i + 1}`} />
+              <ProductText>
+                Item: xyz<br />
+                Price: $xyz
+              </ProductText>
+            </ProductCard>
+          ))}
+        </ProductGrid>
 
+        <SectionLogo src={ssLogo} alt="Sword & Shield" />
+        <ProductGrid>
+          {[1,2,3,4].map((_, i) => (
+            <ProductCard key={i}>
+              <ProductImage src={placeholderImg} alt={`SS Product ${i + 1}`} />
+              <ProductText>
+                Item: xyz<br />
+                Price: $xyz
+              </ProductText>
+            </ProductCard>
+          ))}
+        </ProductGrid>
       </CenterWrapper>
     </StyledPage>
   );
