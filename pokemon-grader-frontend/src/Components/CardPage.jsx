@@ -117,7 +117,7 @@ const StyledCardsPage = styled.div`
   overflow: hidden;
 `;
 
-export const CardsPage = () => {
+export const CardPage = () => {
   return (
     <StyledCardsPage>
       <StyledRectangle1 />
