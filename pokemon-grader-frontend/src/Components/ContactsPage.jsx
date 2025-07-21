@@ -1,166 +1,240 @@
+// import React from "react";
+// import styled from "styled-components";
+// import { Link } from "react-router-dom";
+// import pokeballImage from "../assets/images/Pokeball.png";
+// import LHImage from "../assets/images/luckyhelmetlogo.png";
+// import reshiramImage from "../assets/images/reshiram.png";
+// import zekromImage from "../assets/images/zekrom.png";
+// import cappikaImage from "../assets/images/captain_pika.png";
+// import BandWImage from "../assets/images/Black_and_White_Logo.png";
+
+// const StyledNewContentPage = styled.div`
+//   width: 100vw;
+//   min-height: 100vh;
+//   background: linear-gradient(135deg, #030f2d 17%, #fff700 48%, #030f2d 77%);
+//   display: flex;
+//   justify-content: center;
+//   overflow-x: hidden;
+// `;
+
+// const CenterWrapper = styled.div`
+//   width: 100%;
+//   max-width: 1200px;
+//   margin: 0 auto;
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+// `;
+
+// const Logo = styled.img`
+//   width: 160px;
+//   margin: 1px 0;
+// `;
+
+// const NavBar = styled.div`
+//   background: #1e1855;
+//   border-radius: 999px;
+//   padding: 10px 40px 10px 80px;
+//   display: flex;
+//   align-items: center;
+//   justify-content: space-between;
+//   width:100%;
+//   gap: 2rem;
+//   margin-bottom: 1rem;
+//   position: relative;
+//   max-width: 800px;
+// `;
+
+// const NavItem = styled.span`
+//   color: white;
+//   font-size: 1.2rem;
+//   font-style: italic;
+//   font-weight: 900;
+//   cursor: pointer;
+//   padding: 4px 12px;
+//   border-radius: 12px;
+//   white-space: nowrap;
+// `;
+
+// const Pokeball = styled.img`
+//   width: 90px;
+//   position: absolute;
+//   left: -45px;
+//   top: 50%;
+//   transform: translateY(-50%);
+//   z-index: 2;
+// `;
+
+// const ProductBox = styled.div`
+//   background: #1e1855;
+//   border-radius: 41px;
+//   margin: 2rem 0;
+//   padding: 2rem;
+//   max-width: 600px;
+//   width: 100%;
+//   display: flex;
+//   justify-content: center;
+// `;
+
+// const InnerBox = styled.div`
+//   background: white;
+//   border-radius: 30px;
+//   padding: 2rem;
+//   display: flex;
+//   align-items: center;
+//   gap: 2rem;
+//   flex-wrap: wrap;
+//   justify-content: center;
+//   width: 100%;
+// `;
+
+// const ProductImage = styled.img`
+//   width: 250px;
+//   max-width: 100%;
+// `;
+
+// const ProductText = styled.div`
+//   font-size: 1.2rem;
+//   font-style: italic;
+//   font-weight: 900;
+//   text-align: center;
+// `;
+
+// export const PacksPage = () => {
+//   return (
+//     <StyledNewContentPage>
+//       <CenterWrapper>
+//         <Logo src={LHImage} alt="Lucky Helmet Logo" />
+//         <NavBar>
+//           <Pokeball src={pokeballImage} alt="Pokeball" />
+//           <div style={{ display: 'flex', gap: '2rem' }}>
+//             <Link to="/" style={{ textDecoration: 'none' }}><NavItem>Home</NavItem></Link>
+//             <Link to="/new" style={{ textDecoration: 'none' }}><NavItem>New</NavItem></Link>
+//             <Link to="/packs" style={{ textDecoration: 'none' }}><NavItem>Packs</NavItem></Link>
+//             <Link to="/cards" style={{ textDecoration: 'none' }}><NavItem>Cards</NavItem></Link>
+//           </div>
+//           <Link to="/contact" style={{ textDecoration: 'none' }}><NavItem>Contact</NavItem></Link>
+//         </NavBar>
+//       </CenterWrapper>
+//     </StyledNewContentPage>
+//   );
+// };
 import React from "react";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
+import pokeballImage from "../assets/images/Pokeball.png";
+import LHImage from "../assets/images/luckyhelmetlogo.png";
 
-const StyledRectangle1 = styled.div`
-    width: 1118px;
-    height: 65px;
-    left: 108px;
-    top: 196px;
-    position: absolute;
-    background: #1E1855;
-    border-radius: 41px;
+const StyledPage = styled.div`
+  width: 100vw;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #030f2d 17%, #fff700 48%, #030f2d 77%);
+  display: flex;
+  justify-content: center;
+  overflow-x: hidden;
 `;
 
-const StyledHomespan = styled.span`
-    color: white;
-    font-size: 36px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
+const CenterWrapper = styled.div`
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
-const StyledNewspan = styled.span`
-    color: white;
-    font-size: 36px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
+const Logo = styled.img`
+  width: 160px;
+  margin: 1px 0;
 `;
 
-const StyledPacksspan = styled.span`
-    color: white;
-    font-size: 36px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
+const NavBar = styled.div`
+  background: #1e1855;
+  border-radius: 999px;
+  padding: 10px 40px 10px 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width:100%;
+  gap: 2rem;
+  margin-bottom: 1rem;
+  position: relative;
+  max-width: 800px;
 `;
 
-const StyledCardsspan = styled.span`
-    color: white;
-    font-size: 36px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
+const NavItem = styled.span`
+  color: white;
+  font-size: 1.2rem;
+  font-style: italic;
+  font-weight: 900;
+  cursor: pointer;
+  padding: 4px 12px;
+  border-radius: 12px;
+  white-space: nowrap;
 `;
 
-const StyledContactspan = styled.span`
-    color: white;
-    font-size: 36px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
+const Pokeball = styled.img`
+  width: 90px;
+  position: absolute;
+  left: -45px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
 `;
 
-const StyledLuckyhelmetlogo1 = styled.div`
-    width: 239px;
-    height: 239px;
-    left: 520px;
-    top: -11px;
-    position: absolute;
+const ProductBox = styled.div`
+  background: #1e1855;
+  border-radius: 41px;
+  margin: 2rem 0;
+  padding: 2rem;
+  max-width: 600px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
 `;
 
-const StyledPokBalliconsvg1 = styled.div`
-    width: 131px;
-    height: 131px;
-    left: 42px;
-    top: 163px;
-    position: absolute;
+const InnerBox = styled.div`
+  background: white;
+  border-radius: 30px;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
 `;
 
-const StyledRectangle31 = styled.div`
-    width: 750px;
-    height: 448px;
-    left: 250px;
-    top: 382px;
-    position: absolute;
-    background: #1E1855;
-    border-radius: 41px;
+const ProductImage = styled.img`
+  width: 250px;
+  max-width: 100%;
 `;
 
-const StyledRectangle3101 = styled.div`
-    width: 672px;
-    height: 391px;
-    left: 287px;
-    top: 413px;
-    position: absolute;
-    background: white;
-    border-radius: 41px;
-`;
-
-const StyledEmailprototypegmailcomphonenumber12321415345pleaseallowfor13businessdaysforareponsethankyouspan01 = styled.span`
-    color: black;
-    font-size: 32px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
-`;
-
-const StyledEmailprototypegmailcomphonenumber12321415345pleaseallowfor13businessdaysforareponsethankyouspan02 = styled.span`
-    color: black;
-    font-size: 32px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    text-decoration: underline;
-    word-wrap: break-word;
-`;
-
-const StyledEmailprototypegmailcomphonenumber12321415345pleaseallowfor13businessdaysforareponsethankyouspan03 = styled.span`
-    color: black;
-    font-size: 32px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
-`;
-
-const StyledEmailprototypegmailcomphonenumber12321415345pleaseallowfor13businessdaysforareponsethankyouspan04 = styled.span`
-    color: black;
-    font-size: 32px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    text-decoration: underline;
-    word-wrap: break-word;
-`;
-
-const StyledEmailprototypegmailcomphonenumber12321415345pleaseallowfor13businessdaysforareponsethankyouspan05 = styled.span`
-    color: black;
-    font-size: 32px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
-`;
-
-const StyledContactsPage = styled.div`
-    width: 100%;
-    height: 100%;
-    position: relative;
-    background: linear-gradient(0deg, black 0%, black 100%), linear-gradient(135deg, #030F2D 17%, #FFF700 48%, #030F2D 77%);
-    overflow: hidden;
+const ProductText = styled.div`
+  font-size: 1.2rem;
+  font-style: italic;
+  font-weight: 900;
+  text-align: center;
 `;
 
 export const ContactsPage = () => {
-    return (
-        <StyledContactsPage>
-            <StyledRectangle1 />
-            <StyledHome>Home</StyledHome>
-            <StyledNew>New</StyledNew>
-            <StyledPacks>Packs</StyledPacks>
-            <StyledCards>Cards</StyledCards>
-            <StyledContact>Contact</StyledContact>
-            <StyledLuckyhelmetlogo1  src="https://placehold.co/239x239"/>
-            <StyledPokBalliconsvg1  src="https://placehold.co/131x131"/>
-            <StyledRectangle31 />
-            <StyledRectangle3101 />
-            <StyledEmailprototypegmailcomPhoneNumber12321415345Pleaseallowfor13businessdaysforareponseThankyou><StyledEmailprototypegmailcomphonenumber12321415345pleaseallowfor13businessdaysforareponsethankyouspan01><br/></StyledEmailprototypegmailcomphonenumber12321415345pleaseallowfor13businessdaysforareponsethankyouspan01><StyledEmailprototypegmailcomphonenumber12321415345pleaseallowfor13businessdaysforareponsethankyouspan02>Email</StyledEmailprototypegmailcomphonenumber12321415345pleaseallowfor13businessdaysforareponsethankyouspan02><StyledEmailprototypegmailcomphonenumber12321415345pleaseallowfor13businessdaysforareponsethankyouspan03>: prototype@gmail.com<br/></StyledEmailprototypegmailcomphonenumber12321415345pleaseallowfor13businessdaysforareponsethankyouspan03><StyledEmailprototypegmailcomphonenumber12321415345pleaseallowfor13businessdaysforareponsethankyouspan04>Phone Number:</StyledEmailprototypegmailcomphonenumber12321415345pleaseallowfor13businessdaysforareponsethankyouspan04><StyledEmailprototypegmailcomphonenumber12321415345pleaseallowfor13businessdaysforareponsethankyouspan05> 12321415345<br/><br/><br/>Please allow for 1-3 business days for a reponse. Thank you!</StyledEmailprototypegmailcomphonenumber12321415345pleaseallowfor13businessdaysforareponsethankyouspan05></StyledEmailprototypegmailcomPhoneNumber12321415345Pleaseallowfor13businessdaysforareponseThankyou>
-        </StyledContactsPage>
-    );
+  return (
+    <StyledPage>
+      <CenterWrapper>
+        <Logo src={LHImage} alt="Lucky Helmet Logo" />
+        <NavBar>
+          <Pokeball src={pokeballImage} alt="Pokeball" />
+          <div style={{ display: 'flex', gap: '2rem' }}>
+            <Link to="/" style={{ textDecoration: 'none' }}><NavItem>Home</NavItem></Link>
+            <Link to="/new" style={{ textDecoration: 'none' }}><NavItem>New</NavItem></Link>
+            <Link to="/packs" style={{ textDecoration: 'none' }}><NavItem>Packs</NavItem></Link>
+            <Link to="/cards" style={{ textDecoration: 'none' }}><NavItem>Cards</NavItem></Link>
+          </div>
+          <Link to="/contact" style={{ textDecoration: 'none' }}><NavItem>Contact</NavItem></Link>
+        </NavBar>
+
+
+      </CenterWrapper>
+    </StyledPage>
+  );
 };

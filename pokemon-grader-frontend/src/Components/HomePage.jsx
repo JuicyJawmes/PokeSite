@@ -6,6 +6,7 @@ import pokeballImage from "../assets/images/Pokeball.png";
 import cappikaImage from "../assets/images/captain_pika.png";
 import BandWImage from "../assets/images/Black_and_White_Logo.png";
 import LHImage from "../assets/images/luckyhelmetlogo.png";
+import { Link } from 'react-router-dom';
 
 const StyledHomePage = styled.div`
   width: 100vw;
@@ -27,7 +28,7 @@ const CenterWrapper = styled.div`
 
 const Logo = styled.img`
   width: 160px;
-  margin: 5px 0;
+  margin: 1px 0;
 `;
 
 const NavBar = styled.div`
@@ -164,12 +165,12 @@ export const HomePage = () => {
         <NavBar>
           <Pokeball src={pokeballImage} alt="Pokeball" />
           <div style={{ display: 'flex', gap: '2rem' }}>
-            <NavItem>Home</NavItem>
-            <NavItem>New</NavItem>
-            <NavItem>Packs</NavItem>
-            <NavItem>Cards</NavItem>
+            <Link to="/" style={{ textDecoration: 'none' }}><NavItem>Home</NavItem></Link>
+            <Link to="/new" style={{ textDecoration: 'none' }}><NavItem>New</NavItem></Link>
+            <Link to="/packs" style={{ textDecoration: 'none' }}><NavItem>Packs</NavItem></Link>
+            <Link to="/cards" style={{ textDecoration: 'none' }}><NavItem>Cards</NavItem></Link>
           </div>
-          <NavItem>Contact</NavItem>
+          <Link to="/contact" style={{ textDecoration: 'none' }}><NavItem>Contact</NavItem></Link>
         </NavBar>
 
         <SectionTitle>Upcoming Release</SectionTitle>

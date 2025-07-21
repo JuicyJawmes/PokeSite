@@ -1,138 +1,240 @@
+// import React from "react";
+// import styled from "styled-components";
+// import { Link } from "react-router-dom";
+// import pokeballImage from "../assets/images/Pokeball.png";
+// import LHImage from "../assets/images/luckyhelmetlogo.png";
+// import reshiramImage from "../assets/images/reshiram.png";
+// import zekromImage from "../assets/images/zekrom.png";
+// import cappikaImage from "../assets/images/captain_pika.png";
+// import BandWImage from "../assets/images/Black_and_White_Logo.png";
+
+// const StyledNewContentPage = styled.div`
+//   width: 100vw;
+//   min-height: 100vh;
+//   background: linear-gradient(135deg, #030f2d 17%, #fff700 48%, #030f2d 77%);
+//   display: flex;
+//   justify-content: center;
+//   overflow-x: hidden;
+// `;
+
+// const CenterWrapper = styled.div`
+//   width: 100%;
+//   max-width: 1200px;
+//   margin: 0 auto;
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+// `;
+
+// const Logo = styled.img`
+//   width: 160px;
+//   margin: 1px 0;
+// `;
+
+// const NavBar = styled.div`
+//   background: #1e1855;
+//   border-radius: 999px;
+//   padding: 10px 40px 10px 80px;
+//   display: flex;
+//   align-items: center;
+//   justify-content: space-between;
+//   width:100%;
+//   gap: 2rem;
+//   margin-bottom: 1rem;
+//   position: relative;
+//   max-width: 800px;
+// `;
+
+// const NavItem = styled.span`
+//   color: white;
+//   font-size: 1.2rem;
+//   font-style: italic;
+//   font-weight: 900;
+//   cursor: pointer;
+//   padding: 4px 12px;
+//   border-radius: 12px;
+//   white-space: nowrap;
+// `;
+
+// const Pokeball = styled.img`
+//   width: 90px;
+//   position: absolute;
+//   left: -45px;
+//   top: 50%;
+//   transform: translateY(-50%);
+//   z-index: 2;
+// `;
+
+// const ProductBox = styled.div`
+//   background: #1e1855;
+//   border-radius: 41px;
+//   margin: 2rem 0;
+//   padding: 2rem;
+//   max-width: 600px;
+//   width: 100%;
+//   display: flex;
+//   justify-content: center;
+// `;
+
+// const InnerBox = styled.div`
+//   background: white;
+//   border-radius: 30px;
+//   padding: 2rem;
+//   display: flex;
+//   align-items: center;
+//   gap: 2rem;
+//   flex-wrap: wrap;
+//   justify-content: center;
+//   width: 100%;
+// `;
+
+// const ProductImage = styled.img`
+//   width: 250px;
+//   max-width: 100%;
+// `;
+
+// const ProductText = styled.div`
+//   font-size: 1.2rem;
+//   font-style: italic;
+//   font-weight: 900;
+//   text-align: center;
+// `;
+
+// export const PacksPage = () => {
+//   return (
+//     <StyledNewContentPage>
+//       <CenterWrapper>
+//         <Logo src={LHImage} alt="Lucky Helmet Logo" />
+//         <NavBar>
+//           <Pokeball src={pokeballImage} alt="Pokeball" />
+//           <div style={{ display: 'flex', gap: '2rem' }}>
+//             <Link to="/" style={{ textDecoration: 'none' }}><NavItem>Home</NavItem></Link>
+//             <Link to="/new" style={{ textDecoration: 'none' }}><NavItem>New</NavItem></Link>
+//             <Link to="/packs" style={{ textDecoration: 'none' }}><NavItem>Packs</NavItem></Link>
+//             <Link to="/cards" style={{ textDecoration: 'none' }}><NavItem>Cards</NavItem></Link>
+//           </div>
+//           <Link to="/contact" style={{ textDecoration: 'none' }}><NavItem>Contact</NavItem></Link>
+//         </NavBar>
+//       </CenterWrapper>
+//     </StyledNewContentPage>
+//   );
+// };
 import React from "react";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
+import pokeballImage from "../assets/images/Pokeball.png";
+import LHImage from "../assets/images/luckyhelmetlogo.png";
 
-const StyledRectangle1 = styled.div`
-    width: 1118px;
-    height: 65px;
-    left: 108px;
-    top: 196px;
-    position: absolute;
-    background: #1E1855;
-    border-radius: 41px;
+const StyledPage = styled.div`
+  width: 100vw;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #030f2d 17%, #fff700 48%, #030f2d 77%);
+  display: flex;
+  justify-content: center;
+  overflow-x: hidden;
 `;
 
-const StyledHomespan = styled.span`
-    color: white;
-    font-size: 36px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
+const CenterWrapper = styled.div`
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
-const StyledNewspan = styled.span`
-    color: white;
-    font-size: 36px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
+const Logo = styled.img`
+  width: 160px;
+  margin: 1px 0;
 `;
 
-const StyledPacksspan = styled.span`
-    color: white;
-    font-size: 36px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
+const NavBar = styled.div`
+  background: #1e1855;
+  border-radius: 999px;
+  padding: 10px 40px 10px 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width:100%;
+  gap: 2rem;
+  margin-bottom: 1rem;
+  position: relative;
+  max-width: 800px;
 `;
 
-const StyledCardsspan = styled.span`
-    color: white;
-    font-size: 36px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
+const NavItem = styled.span`
+  color: white;
+  font-size: 1.2rem;
+  font-style: italic;
+  font-weight: 900;
+  cursor: pointer;
+  padding: 4px 12px;
+  border-radius: 12px;
+  white-space: nowrap;
 `;
 
-const StyledContactspan = styled.span`
-    color: white;
-    font-size: 36px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
+const Pokeball = styled.img`
+  width: 90px;
+  position: absolute;
+  left: -45px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
 `;
 
-const StyledLuckyhelmetlogo1 = styled.div`
-    width: 239px;
-    height: 239px;
-    left: 520px;
-    top: -11px;
-    position: absolute;
+const ProductBox = styled.div`
+  background: #1e1855;
+  border-radius: 41px;
+  margin: 2rem 0;
+  padding: 2rem;
+  max-width: 600px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
 `;
 
-const StyledPokBalliconsvg1 = styled.div`
-    width: 131px;
-    height: 131px;
-    left: 42px;
-    top: 163px;
-    position: absolute;
+const InnerBox = styled.div`
+  background: white;
+  border-radius: 30px;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
 `;
 
-const StyledRectangle34 = styled.div`
-    width: 1070px;
-    height: 196px;
-    left: 94px;
-    top: 350px;
-    position: absolute;
-    background: #1E1855;
-    border-radius: 41px;
+const ProductImage = styled.img`
+  width: 250px;
+  max-width: 100%;
 `;
 
-const StyledRectangle35 = styled.div`
-    width: 1070px;
-    height: 321px;
-    left: 94px;
-    top: 635px;
-    position: absolute;
-    background: #1E1855;
-    border-radius: 41px;
-`;
-
-const StyledPsagradeanalyzerspan = styled.span`
-    color: white;
-    font-size: 96px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
-`;
-
-const StyledHowitworkssubmitimagesofthefrontandbackofthedesiredcardyouwanttogradeaiwillscantheimagesanddeterminedthepotentialgradeofyourcarddisclaimerluckyhelmetclubisnotresponsibleforincorrectgradesthatyoureceivefrompsaandwillnotreimburseyouforyoursubmissionsspan = styled.span`
-    color: white;
-    font-size: 20px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
-`;
-
-const StyledGradingPage = styled.div`
-    width: 100%;
-    height: 100%;
-    position: relative;
-    background: linear-gradient(0deg, black 0%, black 100%), linear-gradient(135deg, #030F2D 17%, #FFF700 48%, #030F2D 77%);
-    overflow: hidden;
+const ProductText = styled.div`
+  font-size: 1.2rem;
+  font-style: italic;
+  font-weight: 900;
+  text-align: center;
 `;
 
 export const GradingPage = () => {
-    return (
-        <StyledGradingPage>
-            <StyledRectangle1 />
-            <StyledHome>Home</StyledHome>
-            <StyledNew>New</StyledNew>
-            <StyledPacks>Packs</StyledPacks>
-            <StyledCards>Cards</StyledCards>
-            <StyledContact>Contact</StyledContact>
-            <StyledLuckyhelmetlogo1  src="https://placehold.co/239x239"/>
-            <StyledPokBalliconsvg1  src="https://placehold.co/131x131"/>
-            <StyledRectangle34 />
-            <StyledRectangle35 />
-            <StyledPSAGradeAnalyzer>PSA Grade Analyzer</StyledPSAGradeAnalyzer>
-            <StyledHowitworksSubmitimagesofthefrontandbackofthedesiredcardyouwanttogradeAiwillscantheimagesanddeterminedthepotentialgradeofyourcardDisclaimerLuckyHelmetClubisnotresponsibleforincorrectgradesthatyoureceivefromPSAandwillnotreimburseyouforyoursubmissions>How it works:<br/><br/>Submit images of the front and back of the desired card you want to grade. Ai will scan the images and determined the potential grade of your card.<br/><br/><br/>Disclaimer:      Lucky Helmet Club is not responsible for incorrect grades that you receive from PSA and will not reimburse you for your submissions.</StyledHowitworksSubmitimagesofthefrontandbackofthedesiredcardyouwanttogradeAiwillscantheimagesanddeterminedthepotentialgradeofyourcardDisclaimerLuckyHelmetClubisnotresponsibleforincorrectgradesthatyoureceivefromPSAandwillnotreimburseyouforyoursubmissions>
-        </StyledGradingPage>
-    );
+  return (
+    <StyledPage>
+      <CenterWrapper>
+        <Logo src={LHImage} alt="Lucky Helmet Logo" />
+        <NavBar>
+          <Pokeball src={pokeballImage} alt="Pokeball" />
+          <div style={{ display: 'flex', gap: '2rem' }}>
+            <Link to="/" style={{ textDecoration: 'none' }}><NavItem>Home</NavItem></Link>
+            <Link to="/new" style={{ textDecoration: 'none' }}><NavItem>New</NavItem></Link>
+            <Link to="/packs" style={{ textDecoration: 'none' }}><NavItem>Packs</NavItem></Link>
+            <Link to="/cards" style={{ textDecoration: 'none' }}><NavItem>Cards</NavItem></Link>
+          </div>
+          <Link to="/contact" style={{ textDecoration: 'none' }}><NavItem>Contact</NavItem></Link>
+        </NavBar>
+
+
+      </CenterWrapper>
+    </StyledPage>
+  );
 };

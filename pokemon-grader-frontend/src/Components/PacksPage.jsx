@@ -1,370 +1,119 @@
 import React from "react";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
+import pokeballImage from "../assets/images/Pokeball.png";
+import LHImage from "../assets/images/luckyhelmetlogo.png";
 
-const StyledRectangle1 = styled.div`
-    width: 1118px;
-    height: 65px;
-    left: 108px;
-    top: 196px;
-    position: absolute;
-    background: #1E1855;
-    border-radius: 41px;
+const StyledPage = styled.div`
+  width: 100vw;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #030f2d 17%, #fff700 48%, #030f2d 77%);
+  display: flex;
+  justify-content: center;
+  overflow-x: hidden;
 `;
 
-const StyledHomespan = styled.span`
-    color: white;
-    font-size: 36px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
+const CenterWrapper = styled.div`
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
-const StyledNewspan = styled.span`
-    color: white;
-    font-size: 36px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
+const Logo = styled.img`
+  width: 160px;
+  margin: 1px 0;
 `;
 
-const StyledPacksspan = styled.span`
-    color: white;
-    font-size: 36px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
+const NavBar = styled.div`
+  background: #1e1855;
+  border-radius: 999px;
+  padding: 10px 40px 10px 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width:100%;
+  gap: 2rem;
+  margin-bottom: 1rem;
+  position: relative;
+  max-width: 800px;
 `;
 
-const StyledCardsspan = styled.span`
-    color: white;
-    font-size: 36px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
+const NavItem = styled.span`
+  color: white;
+  font-size: 1.2rem;
+  font-style: italic;
+  font-weight: 900;
+  cursor: pointer;
+  padding: 4px 12px;
+  border-radius: 12px;
+  white-space: nowrap;
 `;
 
-const StyledContactspan = styled.span`
-    color: white;
-    font-size: 36px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
+const Pokeball = styled.img`
+  width: 90px;
+  position: absolute;
+  left: -45px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
 `;
 
-const StyledLuckyhelmetlogo1 = styled.div`
-    width: 239px;
-    height: 239px;
-    left: 520px;
-    top: -11px;
-    position: absolute;
+const ProductBox = styled.div`
+  background: #1e1855;
+  border-radius: 41px;
+  margin: 2rem 0;
+  padding: 2rem;
+  max-width: 600px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
 `;
 
-const StyledPokBalliconsvg1 = styled.div`
-    width: 131px;
-    height: 131px;
-    left: 42px;
-    top: 163px;
-    position: absolute;
+const InnerBox = styled.div`
+  background: white;
+  border-radius: 30px;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
 `;
 
-const StyledRectangle15 = styled.div`
-    width: 265px;
-    height: 262px;
-    left: 302px;
-    top: 582px;
-    position: absolute;
-    background: #1E1855;
-    border-radius: 41px;
+const ProductImage = styled.img`
+  width: 250px;
+  max-width: 100%;
 `;
 
-const StyledRectangle23 = styled.div`
-    width: 236px;
-    height: 229px;
-    left: 317px;
-    top: 598px;
-    position: absolute;
-    background: white;
-    border-radius: 41px;
-`;
-
-const StyledRectangle16 = styled.div`
-    width: 265px;
-    height: 262px;
-    left: 700px;
-    top: 582px;
-    position: absolute;
-    background: #1E1855;
-    border-radius: 41px;
-`;
-
-const StyledItemxyzpricexyzspan = styled.span`
-    color: white;
-    font-size: 32px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
-`;
-
-const StyledItemxyzpricexyz01span = styled.span`
-    color: white;
-    font-size: 32px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
-`;
-
-const StyledRectangle17 = styled.div`
-    width: 265px;
-    height: 262px;
-    left: 314px;
-    top: 1038px;
-    position: absolute;
-    background: #1E1855;
-    border-radius: 41px;
-`;
-
-const StyledRectangle18 = styled.div`
-    width: 265px;
-    height: 262px;
-    left: 712px;
-    top: 1038px;
-    position: absolute;
-    background: #1E1855;
-    border-radius: 41px;
-`;
-
-const StyledItemxyzpricexyz02span = styled.span`
-    color: white;
-    font-size: 32px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
-`;
-
-const StyledItemxyzpricexyz03span = styled.span`
-    color: white;
-    font-size: 32px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
-`;
-
-const StyledRectangle19 = styled.div`
-    width: 265px;
-    height: 262px;
-    left: 332px;
-    top: 1750px;
-    position: absolute;
-    background: #1E1855;
-    border-radius: 41px;
-`;
-
-const StyledRectangle20 = styled.div`
-    width: 265px;
-    height: 262px;
-    left: 730px;
-    top: 1750px;
-    position: absolute;
-    background: #1E1855;
-    border-radius: 41px;
-`;
-
-const StyledItemxyzpricexyz04span = styled.span`
-    color: white;
-    font-size: 32px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
-`;
-
-const StyledItemxyzpricexyz05span = styled.span`
-    color: white;
-    font-size: 32px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
-`;
-
-const StyledRectangle21 = styled.div`
-    width: 265px;
-    height: 262px;
-    left: 344px;
-    top: 2206px;
-    position: absolute;
-    background: #1E1855;
-    border-radius: 41px;
-`;
-
-const StyledRectangle22 = styled.div`
-    width: 265px;
-    height: 262px;
-    left: 742px;
-    top: 2206px;
-    position: absolute;
-    background: #1E1855;
-    border-radius: 41px;
-`;
-
-const StyledItemxyzpricexyz06span = styled.span`
-    color: white;
-    font-size: 32px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
-`;
-
-const StyledItemxyzpricexyz07span = styled.span`
-    color: white;
-    font-size: 32px;
-    font-family: Inter;
-    font-style: italic;
-    font-weight: 900;
-    word-wrap: break-word;
-`;
-
-const StyledRectangle24 = styled.div`
-    width: 236px;
-    height: 229px;
-    left: 715px;
-    top: 598px;
-    position: absolute;
-    background: white;
-    border-radius: 41px;
-`;
-
-const StyledRectangle25 = styled.div`
-    width: 236px;
-    height: 229px;
-    left: 329px;
-    top: 1054px;
-    position: absolute;
-    background: white;
-    border-radius: 41px;
-`;
-
-const StyledRectangle26 = styled.div`
-    width: 236px;
-    height: 229px;
-    left: 724px;
-    top: 1054px;
-    position: absolute;
-    background: white;
-    border-radius: 41px;
-`;
-
-const StyledRectangle27 = styled.div`
-    width: 236px;
-    height: 229px;
-    left: 344px;
-    top: 1766px;
-    position: absolute;
-    background: white;
-    border-radius: 41px;
-`;
-
-const StyledRectangle28 = styled.div`
-    width: 236px;
-    height: 229px;
-    left: 742px;
-    top: 1771px;
-    position: absolute;
-    background: white;
-    border-radius: 41px;
-`;
-
-const StyledRectangle29 = styled.div`
-    width: 236px;
-    height: 229px;
-    left: 359px;
-    top: 2222px;
-    position: absolute;
-    background: white;
-    border-radius: 41px;
-`;
-
-const StyledRectangle30 = styled.div`
-    width: 236px;
-    height: 229px;
-    left: 751px;
-    top: 2227px;
-    position: absolute;
-    background: white;
-    border-radius: 41px;
-`;
-
-const StyledScarletViolet1 = styled.div`
-    width: 590px;
-    height: 308px;
-    left: 357px;
-    top: 290px;
-    position: absolute;
-`;
-
-const Styled1811813671pokemontheseriesswordandshieldlogohd1 = styled.div`
-    width: 578px;
-    height: 327px;
-    left: 378px;
-    top: 1461px;
-    position: absolute;
-`;
-
-const StyledPacksPage = styled.div`
-    width: 100%;
-    height: 100%;
-    position: relative;
-    background: linear-gradient(0deg, black 0%, black 100%), linear-gradient(135deg, #030F2D 17%, #FFF700 48%, #030F2D 77%);
-    overflow: hidden;
+const ProductText = styled.div`
+  font-size: 1.2rem;
+  font-style: italic;
+  font-weight: 900;
+  text-align: center;
 `;
 
 export const PacksPage = () => {
-    return (
-        <StyledPacksPage>
-            <StyledRectangle1 />
-            <StyledHome>Home</StyledHome>
-            <StyledNew>New</StyledNew>
-            <StyledPacks>Packs</StyledPacks>
-            <StyledCards>Cards</StyledCards>
-            <StyledContact>Contact</StyledContact>
-            <StyledLuckyhelmetlogo1  src="https://placehold.co/239x239"/>
-            <StyledPokBalliconsvg1  src="https://placehold.co/131x131"/>
-            <StyledRectangle15 />
-            <StyledRectangle23 />
-            <StyledRectangle16 />
-            <StyledItemxyzPricexyz>Item: xyz<br/>Price: $xyz</StyledItemxyzPricexyz>
-            <StyledItemxyzPricexyz01>Item: xyz<br/>Price: $xyz</StyledItemxyzPricexyz01>
-            <StyledRectangle17 />
-            <StyledRectangle18 />
-            <StyledItemxyzPricexyz02>Item: xyz<br/>Price: $xyz</StyledItemxyzPricexyz02>
-            <StyledItemxyzPricexyz03>Item: xyz<br/>Price: $xyz</StyledItemxyzPricexyz03>
-            <StyledRectangle19 />
-            <StyledRectangle20 />
-            <StyledItemxyzPricexyz04>Item: xyz<br/>Price: $xyz</StyledItemxyzPricexyz04>
-            <StyledItemxyzPricexyz05>Item: xyz<br/>Price: $xyz</StyledItemxyzPricexyz05>
-            <StyledRectangle21 />
-            <StyledRectangle22 />
-            <StyledItemxyzPricexyz06>Item: xyz<br/>Price: $xyz</StyledItemxyzPricexyz06>
-            <StyledItemxyzPricexyz07>Item: xyz<br/>Price: $xyz</StyledItemxyzPricexyz07>
-            <StyledRectangle24 />
-            <StyledRectangle25 />
-            <StyledRectangle26 />
-            <StyledRectangle27 />
-            <StyledRectangle28 />
-            <StyledRectangle29 />
-            <StyledRectangle30 />
-            <StyledScarletViolet1  src="https://placehold.co/590x308"/>
-            <Styled1811813671pokemontheseriesswordandshieldlogohd1  src="https://placehold.co/578x327"/>
-        </StyledPacksPage>
-    );
+  return (
+    <StyledPage>
+      <CenterWrapper>
+        <Logo src={LHImage} alt="Lucky Helmet Logo" />
+        <NavBar>
+          <Pokeball src={pokeballImage} alt="Pokeball" />
+          <div style={{ display: 'flex', gap: '2rem' }}>
+            <Link to="/" style={{ textDecoration: 'none' }}><NavItem>Home</NavItem></Link>
+            <Link to="/new" style={{ textDecoration: 'none' }}><NavItem>New</NavItem></Link>
+            <Link to="/packs" style={{ textDecoration: 'none' }}><NavItem>Packs</NavItem></Link>
+            <Link to="/cards" style={{ textDecoration: 'none' }}><NavItem>Cards</NavItem></Link>
+          </div>
+          <Link to="/contact" style={{ textDecoration: 'none' }}><NavItem>Contact</NavItem></Link>
+        </NavBar>
+
+
+      </CenterWrapper>
+    </StyledPage>
+  );
 };
