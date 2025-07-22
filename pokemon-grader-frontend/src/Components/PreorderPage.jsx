@@ -116,7 +116,7 @@ export const PreorderPage = () => {
           <InnerBox>
             <ProductImage src="https://placehold.co/250x250" alt="ETB" />
             <ProductText>
-              Destined Rivals<br />
+              Black Bolt<br />
               ETB<br /><br />
               $89.99
             </ProductText>
@@ -127,9 +127,9 @@ export const PreorderPage = () => {
           <InnerBox>
           <ProductImage src="https://placehold.co/250x250" alt="ETB" />
             <ProductText>
-              Destined Rivals<br />
-              Booster Box<br /><br />
-              $239.99
+              White Flare<br />
+              ETB<br /><br />
+              $89.99
             </ProductText>
           </InnerBox>
         </ProductBox>

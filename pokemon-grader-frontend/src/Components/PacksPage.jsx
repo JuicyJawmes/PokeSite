@@ -6,6 +6,10 @@ import LHImage from "../assets/images/luckyhelmetlogo.png";
 import svLogo from "../assets/images/Scarlet_Violet.png";
 import ssLogo from "../assets/images/sword_shield.png";
 import placeholderImg from "../assets/images/Pokeball.png";
+import packsData from '../data/packsData';
+
+const svPacks = packsData.filter(p => p.set === 'sv');
+const ssPacks = packsData.filter(p => p.set === 'ss');
 
 const StyledPage = styled.div`
   width: 100vw;
@@ -119,6 +123,24 @@ export const PacksPage = () => {
 
         <SectionLogo src={svLogo} alt="Scarlet & Violet" />
         <ProductGrid>
+          {packsData.filter(p => p.set === 'sv').map((product) => (
+            <Link 
+              key={product.id}
+              to={`/product/${product.id}`} 
+              style={{ textDecoration: 'none' }}
+            >
+              <ProductCard>
+                <ProductImage src={product.image} alt={product.title} />
+                <ProductText>
+                  {product.title}<br />
+                  Price: ${product.price}
+                </ProductText>
+              </ProductCard>
+            </Link>
+          ))}
+        </ProductGrid>
+
+        {/* <ProductGrid>
           {[1,2,3,4].map((_, i) => (
             <ProductCard key={i}>
               <ProductImage src={placeholderImg} alt={`SV Product ${i + 1}`} />
@@ -128,10 +150,28 @@ export const PacksPage = () => {
               </ProductText>
             </ProductCard>
           ))}
-        </ProductGrid>
+        </ProductGrid> */}
 
         <SectionLogo src={ssLogo} alt="Sword & Shield" />
         <ProductGrid>
+          {packsData.filter(p => p.set === 'ss').map((product) => (
+            <Link 
+              key={product.id}
+              to={`/product/${product.id}`} 
+              style={{ textDecoration: 'none' }}
+            >
+              <ProductCard>
+                <ProductImage src={product.image} alt={product.title} />
+                <ProductText>
+                  {product.title}<br />
+                  Price: ${product.price}
+                </ProductText>
+              </ProductCard>
+            </Link>
+          ))}
+        </ProductGrid>
+
+        {/* <ProductGrid>
           {[1,2,3,4].map((_, i) => (
             <ProductCard key={i}>
               <ProductImage src={placeholderImg} alt={`SS Product ${i + 1}`} />
@@ -141,7 +181,7 @@ export const PacksPage = () => {
               </ProductText>
             </ProductCard>
           ))}
-        </ProductGrid>
+        </ProductGrid> */}
       </CenterWrapper>
     </StyledPage>
   );

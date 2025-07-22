@@ -117,6 +117,7 @@ const ReleaseBanner = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 2rem;
   padding: 1rem 2rem;
   width: 100%;
   max-width: 660px; 
@@ -137,7 +138,7 @@ const ReleaseLogo = styled.img`
 `;
 
 const PokemonImage = styled.img`
-  width: 110px;
+  width: 120px;
 `;
 
 const CardsContainer = styled.div`
@@ -150,6 +151,7 @@ const CardsContainer = styled.div`
   width: 100%;
   max-width: 500px;
   position: relative;
+  justify-content: center;
 `;
 
 const CardColumn = styled.div`
@@ -212,25 +214,39 @@ export const HomePage = () => {
         </NavBar>
 
         <SectionTitle>Upcoming Release</SectionTitle>
-        <ReleaseBannerOuter>
-          <ReleaseBanner>
-            <PokemonImage src={zekromImage} alt="Zekrom" />
-            <ReleaseLogo src={BandWImage} alt="Set Logo" />
-            <PokemonImage src={reshiramImage} alt="Reshiram" />
-          </ReleaseBanner>
-        </ReleaseBannerOuter>
+        <Link to="/preorder" style={{ textDecoration: 'none' }}>
+          <ReleaseBannerOuter>
+            <ReleaseBanner>
+              <PokemonImage src={zekromImage} alt="Zekrom" />
+              <ReleaseLogo src={BandWImage} alt="Set Logo" />
+              <PokemonImage src={reshiramImage} alt="Reshiram" />
+            </ReleaseBanner>
+          </ReleaseBannerOuter>
+        </Link>
+
 
         <CardsContainer>
-          <CardBox bg="#cbc5ff">New</CardBox>
-          <CardColumn>
+        <Link to="/new" style={{ textDecoration: 'none' }}>
+          <CardBox bg="#cbc5ff" style={{ height: '150px' }}>
+            New
+          </CardBox>
+        </Link>
+        <CardColumn>
+          <Link to="/packs" style={{ textDecoration: 'none' }}>
             <CardBox bg="#c5ffc7">Packs</CardBox>
+          </Link>
+          <Link to="/cards" style={{ textDecoration: 'none' }}>
             <CardBox bg="#ffffc5">Cards</CardBox>
-          </CardColumn>
-          <Pikachu src={cappikaImage} alt="Captain Pikachu" />
-        </CardsContainer>
+          </Link>
+        </CardColumn>
+        <Pikachu src={cappikaImage} alt="Captain Pikachu" />
+      </CardsContainer>
+
         
         <AnalyzerContainer>
-        <AnalyzerBox>Ai Card Analyzer</AnalyzerBox>
+          <Link to="/grader" style={{ textDecoration: 'none' }}>
+            <AnalyzerBox>Ai Card Analyzer</AnalyzerBox>
+          </Link>
         </AnalyzerContainer>
 
       </CenterWrapper>

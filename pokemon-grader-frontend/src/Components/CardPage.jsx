@@ -65,7 +65,7 @@ const Pokeball = styled.img`
 
 const SectionLogo = styled.img`
   width: 300px;
-  margin: rem 0 1rem 0;
+  margin: 0 0 1rem 0;
 `;
 
 const ProductGrid = styled.div`
