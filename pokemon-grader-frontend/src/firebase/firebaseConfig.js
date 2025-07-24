@@ -1,0 +1,315 @@
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { getFirestore } from "firebase/firestore"; // ✅ Add this
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBoYQ7yB_qZga575ao2Pdy0XK-LonJbgRE",
+  authDomain: "pokesite-85bfd.firebaseapp.com",
+  projectId: "pokesite-85bfd",
+  storageBucket: "pokesite-85bfd.firebasestorage.app",
+  messagingSenderId: "280662904292",
+  appId: "1:280662904292:web:49a533053e753c86148bf1",
+  measurementId: "G-VHN6308ETS"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const db = getFirestore(app); // ✅ Define it
+
+const inventory = [
+    {
+      "name": "Deerling IR 165/162 TEF",
+      "card_id": "165/162",
+      "purchase_price": "16",
+      "market_value": "20",
+      "quantity": "2"
+    },
+    {
+      "name": "Gimmighoul IR 198/182 PAR",
+      "card_id": "198/182",
+      "purchase_price": "8",
+      "market_value": "12",
+      "quantity": "2"
+    },
+    {
+      "name": "Minccino IR 182/162 TEF",
+      "card_id": "182/162",
+      "purchase_price": "8",
+      "market_value": "9",
+      "quantity": ""
+    },
+    {
+      "name": "Ceruledge IR 197/191 SSP",
+      "card_id": "197/191",
+      "purchase_price": "28",
+      "market_value": "22",
+      "quantity": ""
+    },
+    {
+      "name": "Fidough IR 213/198 SVI",
+      "card_id": "213/198",
+      "purchase_price": "11",
+      "market_value": "10",
+      "quantity": ""
+    },
+    {
+      "name": "Mismagius IR 212/193 PAL LP/NM",
+      "card_id": "212/193",
+      "purchase_price": "12",
+      "market_value": "17",
+      "quantity": ""
+    },
+    {
+      "name": "Clobbopus IR 207/191 SSP",
+      "card_id": "207/191",
+      "purchase_price": "9.5",
+      "market_value": "6",
+      "quantity": ""
+    },
+    {
+      "name": "Charmander 168/165 MEW",
+      "card_id": "168/165",
+      "purchase_price": "36",
+      "market_value": "50",
+      "quantity": ""
+    },
+    {
+      "name": "Mewtwo 052 BSP MEW UPC ",
+      "card_id": "",
+      "purchase_price": "9",
+      "market_value": "17",
+      "quantity": ""
+    },
+    {
+      "name": "Dragonair IR 181/165 MEW",
+      "card_id": "181/165",
+      "purchase_price": "20",
+      "market_value": "29",
+      "quantity": ""
+    },
+    {
+      "name": "Iris's Fighting Spirit 180/159 JTG",
+      "card_id": "180/159",
+      "purchase_price": "3",
+      "market_value": "4",
+      "quantity": ""
+    },
+    {
+      "name": "Noibat IR 169/159 JTG",
+      "card_id": "169/159",
+      "purchase_price": "6",
+      "market_value": "7",
+      "quantity": ""
+    },
+    {
+      "name": "Lillie's Ribombee 164/159 JTG",
+      "card_id": "164/159",
+      "purchase_price": "10",
+      "market_value": "10",
+      "quantity": ""
+    },
+    {
+      "name": "Nacli IR 220/193 PAL",
+      "card_id": "220/193",
+      "purchase_price": "4",
+      "market_value": "6",
+      "quantity": ""
+    },
+    {
+      "name": "Pikachu 088 BSP",
+      "card_id": "",
+      "purchase_price": "5",
+      "market_value": "7",
+      "quantity": ""
+    },
+    {
+      "name": "Erika' Invitation SIR 203/165 MEW",
+      "card_id": "203/165",
+      "purchase_price": "12",
+      "market_value": "16",
+      "quantity": ""
+    },
+    {
+      "name": "Blastoise EX FA 184/165 MEW",
+      "card_id": "184/165",
+      "purchase_price": "11",
+      "market_value": "15",
+      "quantity": ""
+    },
+    {
+      "name": "Pikachu IR 173/165 MEW",
+      "card_id": "173/165",
+      "purchase_price": "24",
+      "market_value": "32",
+      "quantity": ""
+    },
+    {
+      "name": "Ivysaur IR 167/165 MEW",
+      "card_id": "167/165",
+      "purchase_price": "22",
+      "market_value": "30",
+      "quantity": ""
+    },
+    {
+      "name": "Munkidori IR 072/064 SFA",
+      "card_id": "072/064",
+      "purchase_price": "21",
+      "market_value": "29",
+      "quantity": ""
+    },
+    {
+      "name": "Floragato IR 197/193 PAL",
+      "card_id": "197/193",
+      "purchase_price": "9",
+      "market_value": "12",
+      "quantity": ""
+    },
+    {
+      "name": "Armarouge IR 203/198 SVI",
+      "card_id": "203/198",
+      "purchase_price": "11",
+      "market_value": "13",
+      "quantity": ""
+    },
+    {
+      "name": "Squawkabilly SIR 264/193 PAL",
+      "card_id": "264/193",
+      "purchase_price": "10",
+      "market_value": "11",
+      "quantity": ""
+    },
+    {
+      "name": "Mimikyu (Secret) 245/236 COS",
+      "card_id": "245/236",
+      "purchase_price": "18",
+      "market_value": "26",
+      "quantity": ""
+    },
+    {
+      "name": "LP Hitmontop RV Holo 26/115 UNSEEN FORCES",
+      "card_id": "26/115",
+      "purchase_price": "2",
+      "market_value": "4",
+      "quantity": ""
+    },
+    {
+      "name": "Charlotte Pudding Special Alt Art PSA 10",
+      "purchase_price": "100",
+      "market_value": "132",
+      "quantity": "",
+      "card_id": ""
+    },
+    {
+      "name": "Zorua 075/064 SFA PSA 10",
+      "purchase_price": "113",
+      "market_value": "140",
+      "quantity": "",
+      "card_id": "075/064"
+    },
+    {
+      "name": "Mewtwo Base Set Unlimited SGC 7",
+      "purchase_price": "30",
+      "market_value": "35",
+      "quantity": "",
+      "card_id": ""
+    },
+    {
+      "name": "Umbreon Gold Star CELE",
+      "purchasePrice": 32,
+      "marketValue": 39,
+      "quantity": 1,
+      "cardId": ""
+    },
+    {
+      "name": "Basic Grass Energy (Gold) 283/264 FUS",
+      "purchasePrice": 3,
+      "marketValue": 7,
+      "quantity": 1,
+      "cardId": "283/264"
+    },
+    {
+      "name": "Duraludon VMax TG30/TG30 SIL",
+      "purchasePrice": 1,
+      "marketValue": 4,
+      "quantity": 1,
+      "cardId": "TG30/TG30"
+    },
+    {
+      "name": "Pikachu VMax TG29/TG29 LOST",
+      "purchasePrice": 7,
+      "marketValue": 11,
+      "quantity": 1,
+      "cardId": "TG29/TG29"
+    },
+    {
+      "name": "Duraludon VMax TG21/TG30 SIL",
+      "purchasePrice": 5,
+      "marketValue": 8,
+      "quantity": 1,
+      "cardId": "TG21/TG30"
+    },
+    {
+      "name": "Blissey V TG22/TG30 SIL",
+      "purchasePrice": 7,
+      "marketValue": 11,
+      "quantity": 1,
+      "cardId": "TG22/TG30"
+    },
+    {
+      "name": "Rockruff TG07/TG30 SIL",
+      "purchasePrice": 1,
+      "marketValue": 3,
+      "quantity": 1,
+      "cardId": "TG07/TG30"
+    },
+    {
+      "name": "Jynx TG04/TG30 SIL",
+      "purchasePrice": 1,
+      "marketValue": 2,
+      "quantity": 1,
+      "cardId": "TG04/TG30"
+    },
+    {
+      "name": "Origin Forme Palkia VStar GG67/GG70 CRZ",
+      "purchasePrice": 60,
+      "marketValue": 70,
+      "quantity": 2,
+      "cardId": "GG67/GG70"
+    },
+    {
+      "name": "Noivern V (Alt Art) 196/203 EVO",
+      "purchasePrice": 31,
+      "marketValue": 40,
+      "quantity": 1,
+      "cardId": "196/203"
+    },
+    {
+      "name": "Gardenia’s Vigor GG61/GG70 CRZ",
+      "purchasePrice": 9,
+      "marketValue": 12,
+      "quantity": 1,
+      "cardId": "GG61/GG70"
+    },
+    {
+      "name": "Deoxys VStar GG46/GG70 CRZ",
+      "purchasePrice": 16,
+      "marketValue": 21,
+      "quantity": 1,
+      "cardId": "GG46/GG70"
+    }
+  ];
+
+const uploadData = async () => {
+  for (let card of inventory) {
+    await addDoc(collection(db, "inventory"), card);
+    console.log(`Uploaded: ${card.name}`);
+  }
+};
+
+uploadData();
+
+// ✅ Export the db so it can be used in your components
+export { db };

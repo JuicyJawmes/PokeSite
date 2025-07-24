@@ -6,10 +6,14 @@ import LHImage from "../assets/images/luckyhelmetlogo.png";
 import svLogo from "../assets/images/Scarlet_Violet.png";
 import ssLogo from "../assets/images/sword_shield.png";
 import placeholderImg from "../assets/images/Pokeball.png";
-import packsData from '../data/packsData';
+//import packsData from '../data/packsData';
+import { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase/firebaseConfig";
 
-const svPacks = packsData.filter(p => p.set === 'sv');
-const ssPacks = packsData.filter(p => p.set === 'ss');
+
+// const svPacks = packsData.filter(p => p.set === 'sv');
+// const ssPacks = packsData.filter(p => p.set === 'ss');
 
 const StyledPage = styled.div`
   width: 100vw;
@@ -103,9 +107,32 @@ const ProductText = styled.div`
   color: white;
   margin-top: 2rem;
   text-align: center;
+  
 `;
 
+const usePacksData = () => {
+  const [packs, setPacks] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const querySnapshot = await getDocs(collection(db, "products"));
+      const items = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setPacks(items);
+    };
+
+    fetchData();
+  }, []);
+
+  return packs;
+};
+
+
 export const PacksPage = () => {
+  const packsData = usePacksData(); // Now fetching from Firebase
+
+  const svPacks = packsData.filter(p => p.set === 'sv');
+  const ssPacks = packsData.filter(p => p.set === 'ss');
+
   return (
     <StyledPage>
       <CenterWrapper>
@@ -123,12 +150,8 @@ export const PacksPage = () => {
 
         <SectionLogo src={svLogo} alt="Scarlet & Violet" />
         <ProductGrid>
-          {packsData.filter(p => p.set === 'sv').map((product) => (
-            <Link 
-              key={product.id}
-              to={`/product/${product.id}`} 
-              style={{ textDecoration: 'none' }}
-            >
+          {svPacks.map(product => (
+            <Link key={product.id} to={`/product/${product.id}`} style={{ textDecoration: 'none' }}>
               <ProductCard>
                 <ProductImage src={product.image} alt={product.title} />
                 <ProductText>
@@ -139,27 +162,11 @@ export const PacksPage = () => {
             </Link>
           ))}
         </ProductGrid>
-
-        {/* <ProductGrid>
-          {[1,2,3,4].map((_, i) => (
-            <ProductCard key={i}>
-              <ProductImage src={placeholderImg} alt={`SV Product ${i + 1}`} />
-              <ProductText>
-                Item: xyz<br />
-                Price: $xyz
-              </ProductText>
-            </ProductCard>
-          ))}
-        </ProductGrid> */}
 
         <SectionLogo src={ssLogo} alt="Sword & Shield" />
         <ProductGrid>
-          {packsData.filter(p => p.set === 'ss').map((product) => (
-            <Link 
-              key={product.id}
-              to={`/product/${product.id}`} 
-              style={{ textDecoration: 'none' }}
-            >
+          {ssPacks.map(product => (
+            <Link key={product.id} to={`/product/${product.id}`} style={{ textDecoration: 'none' }}>
               <ProductCard>
                 <ProductImage src={product.image} alt={product.title} />
                 <ProductText>
@@ -170,18 +177,6 @@ export const PacksPage = () => {
             </Link>
           ))}
         </ProductGrid>
-
-        {/* <ProductGrid>
-          {[1,2,3,4].map((_, i) => (
-            <ProductCard key={i}>
-              <ProductImage src={placeholderImg} alt={`SS Product ${i + 1}`} />
-              <ProductText>
-                Item: xyz<br />
-                Price: $xyz
-              </ProductText>
-            </ProductCard>
-          ))}
-        </ProductGrid> */}
       </CenterWrapper>
     </StyledPage>
   );
