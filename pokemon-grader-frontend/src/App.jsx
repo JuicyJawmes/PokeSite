@@ -10,6 +10,8 @@ import { PreorderPage } from './Components/PreorderPage';
 import ProductPage from './Components/ProductPage';
 import CartPage from "./Components/CartPage";
 import CartContext from "./context/CartContext";
+import CheckoutPage from "./Components/CheckoutPage";
+import ConfirmationPage from "./Components/ConfirmationPage";
 import styled from "styled-components";
 
 const FloatingCartButton = styled(Link)`
@@ -47,6 +49,8 @@ function App() {
         <Route path="/grader" element={<GradingPage />} />
         <Route path="/product/:productId" element={<ProductPage />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/confirmation" element={<ConfirmationPage />} />
       </Routes>
     </>
   );
