@@ -234,7 +234,7 @@ const BackButton = styled.button`
   border: none;
   font-size: 1rem;
   cursor: pointer;
-  margin-bottom: 1rem;
+  margin-bottom: 0.01rem;
   text-decoration: underline;
   align-self: flex-start;
 `;
@@ -251,7 +251,7 @@ const CenterWrapper = styled.div`
 
 const Logo = styled.img`
   width: 160px;
-  margin-bottom: 1rem;
+  margin: 1px 0;
 `;
 
 const NavBar = styled.div`
@@ -261,9 +261,9 @@ const NavBar = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
+  width:100%;
   gap: 2rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   position: relative;
   max-width: 800px;
 `;
