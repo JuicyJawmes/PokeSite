@@ -6,10 +6,12 @@ import valid from "card-validator";
 
 const Title = styled.h1`
   text-align: center;
+  
 `;
 
 const Label = styled.label`
   font-weight: bold;
+  font-size: 1.2rem;
 `;
 
 const CheckboxLabel = styled.label`
@@ -23,9 +25,12 @@ const Button = styled.button`
   background: #fff700;
   color: black;
   font-weight: bold;
+  font-size: 1.3rem;
   border: none;
   border-radius: 10px;
   cursor: pointer;
+  width: 32vw;
+  align-self: center;
 `;
 
 const PageWrapper = styled.div`
@@ -33,7 +38,7 @@ const PageWrapper = styled.div`
   justify-content: center;
   align-items: flex-start;
   width: 100vw;
-  height: 100vh;
+  height: 200vh;
   background-color: #030f2d;
   color: white;
 `;
@@ -45,9 +50,8 @@ const CheckoutLayout = styled.div`
   height: 100%;
 `;
 
-
 const FormSection = styled.form`
-  width: 60%; /* Or 55% */
+  width: 60%;
   padding: 2rem;
   display: flex;
   flex-direction: column;
@@ -56,39 +60,43 @@ const FormSection = styled.form`
 
 const SummaryCard = styled.div`
   width: 35%;
-  height: 500px; /* <-- you can adjust this manually */
+  height: 500px; 
   padding: 1.5rem;
   background: white;
   color: black;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   align-self: flex-start;
-  overflow-y: auto; /* scrolls if content overflows */
+  overflow-y: auto;
   margin-top: 12rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;  // pushes top & bottom sections apart
-  min-height: 400px;               // ensures enough space to push the totals downward
+  justify-content: space-between;
+  min-height: 400px;
+  margin-left: -6rem;
 `;
-
 
 const Section = styled.div`
   background-color: #061a3a;
   padding: 1.2rem;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  width: 50%;
+  align-self: center;
 `;
 
 const Input = styled.input`
   padding: 12px;
   border-radius: 8px;
   border: 1px solid #ccc;
-  font-size: 1rem;
+  font-size: 1.2rem;
   background: #f8f8f8;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  width: 95%;
 `;
 
 const Select = styled.select`
@@ -98,6 +106,7 @@ const Select = styled.select`
   background: #f8f8f8;
   border: 1px solid #ccc;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  width: 100%;
 `;
 
 const TotalRow = styled.div`
@@ -114,11 +123,11 @@ const Row = styled.div`
 `;
 
 const HalfInput = styled(Input)`
-  flex: 1;
+  width: 150px; 
 `;
 
 const HalfSelect = styled(Select)`
-  flex: 1;
+  width: 150px; 
 `;
 
 const states = [
@@ -127,6 +136,23 @@ const states = [
   "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT",
   "VT", "VA", "WA", "WV", "WI", "WY"
 ];
+
+/* Example state tax rates (placeholders). Replace with your real rates when ready. */
+const STATE_TAX_RATES = {
+  AL: 0.04,  AK: 0,     AZ: 0.056, AR: 0.065,
+  CA: 0.0725,CO: 0.029, CT: 0.0635,DE: 0,
+  FL: 0.06,  GA: 0.04,  HI: 0.04,  ID: 0.06,
+  IL: 0.0625,IN: 0.07,  IA: 0.06,  KS: 0.065,
+  KY: 0.06,  LA: 0.0445,ME: 0.055, MD: 0.06,
+  MA: 0.0625,MI: 0.06,  MN: 0.0688,MS: 0.07,
+  MO: 0.0423,MT: 0,     NE: 0.055, NV: 0.0685,
+  NH: 0,     NJ: 0.0663,NM: 0.0513,NY: 0.04,
+  NC: 0.0475,ND: 0.05,  OH: 0.0575,OK: 0.045,
+  OR: 0,     PA: 0.06,  RI: 0.07,  SC: 0.06,
+  SD: 0.045, TN: 0.07,  TX: 0.0625,UT: 0.0485,
+  VT: 0.06,  VA: 0.043, WA: 0.065, WV: 0.06,
+  WI: 0.05,  WY: 0
+};
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -166,11 +192,17 @@ const CheckoutPage = () => {
     navigate("/confirmation");
   };
 
+  // ---- Totals + Shipping + Tax ----
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
   const FLAT_SHIPPING_RATE = 1.99;
   const FREE_SHIPPING_THRESHOLD = 50;
   const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_SHIPPING_RATE;
-  const grandTotal = (subtotal + shipping).toFixed(2);
+
+  const state = formData.shippingState || "";
+  const taxRate = STATE_TAX_RATES[state] ?? 0;     // default to 0 if not selected
+  const tax = subtotal * taxRate;
+
+  const grandTotal = (subtotal + shipping + tax).toFixed(2);
 
   if (cartItems.length === 0) {
     return <PageWrapper><Title>Your cart is empty.</Title></PageWrapper>;
@@ -203,7 +235,11 @@ const CheckoutPage = () => {
 
           <Section>
             <CheckboxLabel>
-              <input type="checkbox" checked={useDifferentBilling} onChange={() => setUseDifferentBilling(!useDifferentBilling)} />
+              <input
+                type="checkbox"
+                checked={useDifferentBilling}
+                onChange={() => setUseDifferentBilling(!useDifferentBilling)}
+              />
               Billing address is different
             </CheckboxLabel>
             {useDifferentBilling && (
@@ -222,6 +258,12 @@ const CheckoutPage = () => {
 
           <Section>
             <Label>Payment Information</Label>
+            <Input
+              name="cardName"
+              placeholder="Name on Card"
+              value={formData.cardName}
+              onChange={handleChange}
+            />
             <Input name="cardNumber" placeholder="Card Number" value={formData.cardNumber} onChange={handleChange} />
             <Row>
               <HalfInput name="expiry" placeholder="MM/YY" value={formData.expiry} onChange={handleChange} />
@@ -233,22 +275,25 @@ const CheckoutPage = () => {
         </FormSection>
 
         <SummaryCard>
-  <div>
-    <h2>Order Summary</h2>
-    {cartItems.map(item => (
-      <div key={item.id}>
-        {item.name} x{item.quantity || 1} – ${(item.price * (item.quantity || 1)).toFixed(2)}
-      </div>
-    ))}
-  </div>
+          <div>
+            <h2>Order Summary</h2>
+            {cartItems.map(item => (
+              <div key={item.id}>
+                {item.name} x{item.quantity || 1} – ${(item.price * (item.quantity || 1)).toFixed(2)}
+              </div>
+            ))}
+          </div>
 
-  <div>
-    <TotalRow><span>Subtotal:</span> <span>${subtotal.toFixed(2)}</span></TotalRow>
-    <TotalRow><span>Shipping:</span> <span>{shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}</span></TotalRow>
-    <TotalRow><span>Grand Total:</span> <span>${grandTotal}</span></TotalRow>
-  </div>
-</SummaryCard>
-
+          <div>
+            <TotalRow><span>Subtotal:</span> <span>${subtotal.toFixed(2)}</span></TotalRow>
+            <TotalRow><span>Shipping:</span> <span>{shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}</span></TotalRow>
+            <TotalRow>
+              <span>Tax{taxRate ? ` (${(taxRate * 100).toFixed(2)}%)` : ""}:</span>
+              <span>${tax.toFixed(2)}</span>
+            </TotalRow>
+            <TotalRow><span>Grand Total:</span> <span>${grandTotal}</span></TotalRow>
+          </div>
+        </SummaryCard>
       </CheckoutLayout>
     </PageWrapper>
   );
