@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, Link } from 'react-router-dom';
 import { HomePage } from './Components/HomePage';
 import { CardPage } from './Components/CardPage';
 import { ContactsPage } from './Components/ContactsPage';
@@ -8,13 +8,13 @@ import { NewContentPage } from './Components/NewContentPage';
 import { PacksPage } from './Components/PacksPage';
 import { PreorderPage } from './Components/PreorderPage';
 import ProductPage from './Components/ProductPage';
-import CartPage from "./Components/CartPage";
-import CartContext from "./context/CartContext";
 import CheckoutPage from "./Components/CheckoutPage";
 import ConfirmationPage from "./Components/ConfirmationPage";
+import CartDrawer from "./Components/CartDrawer";
 import styled from "styled-components";
+import { useCart } from "./context/CartContext";
 
-const FloatingCartButton = styled(Link)`
+const FloatingCartButton = styled.button`
   position: fixed;
   top: 20px;
   right: 20px;
@@ -25,19 +25,23 @@ const FloatingCartButton = styled(Link)`
   padding: 12px 20px;
   border-radius: 999px;
   z-index: 1000;
-  text-decoration: none;
   box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
   transition: transform 0.2s ease-in-out;
-  
-  &:hover {
-    transform: scale(1.05);
-  }
+  cursor: pointer;
+  &:hover { transform: scale(1.05); }
 `;
 
 function App() {
+  const { openCart } = useCart();
+
   return (
     <>
-      <FloatingCartButton to="/cart">🛒 Cart</FloatingCartButton>
+      {/* Floating trigger */}
+      <FloatingCartButton onClick={openCart}>🛒 Cart</FloatingCartButton>
+
+      {/* Drawer lives here */}
+      <CartDrawer />
+
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/new" element={<NewContentPage />} />
@@ -48,7 +52,7 @@ function App() {
         <Route path="/preorder" element={<PreorderPage />} />
         <Route path="/grader" element={<GradingPage />} />
         <Route path="/product/:productId" element={<ProductPage />} />
-        <Route path="/cart" element={<CartPage />} />
+        {/* /cart route optional now; the drawer replaces it */}
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/confirmation" element={<ConfirmationPage />} />
       </Routes>
