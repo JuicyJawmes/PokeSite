@@ -130,6 +130,22 @@ const HalfSelect = styled(Select)`
   width: 150px; 
 `;
 
+const BackButton = styled(Button)`
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: transparent;
+  color: white;
+  border: 2px solid #fff700;
+  width: auto;
+
+  &:hover {
+    background: #fff700;
+    color: black;
+  }
+`;
+
+
 const states = [
   "", "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN",
   "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH",
@@ -212,6 +228,9 @@ const CheckoutPage = () => {
     <PageWrapper>
       <CheckoutLayout>
         <FormSection onSubmit={handleSubmit}>
+        <BackButton type="button" onClick={() => navigate(-1)}>
+          ← Back
+        </BackButton>
           <Title>Checkout</Title>
 
           <Section>
