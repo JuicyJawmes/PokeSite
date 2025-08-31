@@ -1,14 +1,12 @@
-// import React from "react";
+// import React, { useEffect, useState } from "react";
 // import styled from "styled-components";
 // import { Link } from "react-router-dom";
 // import pokeballImage from "../assets/images/Pokeball.png";
 // import LHImage from "../assets/images/luckyhelmetlogo.png";
 // import placeholderImg from "../assets/images/Pokeball.png";
 // import SC from "../assets/images/Single Cards Title.png";
-// import { useEffect, useState } from "react";
 // import { collection, getDocs } from "firebase/firestore";
 // import { db } from "../firebase/firebaseConfig";
-
 
 // const StyledPage = styled.div`
 //   width: 100vw;
@@ -86,6 +84,10 @@
 //   display: flex;
 //   flex-direction: column;
 //   align-items: center;
+//   transition: transform 0.2s ease;
+//   &:hover {
+//     transform: scale(1.02);
+//   }
 // `;
 
 // const ProductImage = styled.img`
@@ -104,14 +106,16 @@
 //   text-align: center;
 // `;
 
-
 // export const CardPage = () => {
 //   const [products, setProducts] = useState([]);
 
 //   useEffect(() => {
 //     const fetchCards = async () => {
 //       const querySnapshot = await getDocs(collection(db, "products"));
-//       const items = querySnapshot.docs.map(doc => doc.data());
+//       const items = querySnapshot.docs.map(doc => ({
+//         id: doc.id,
+//         ...doc.data()
+//       }));
 //       setProducts(items);
 //     };
 //     fetchCards();
@@ -136,13 +140,19 @@
 
 //         <ProductGrid>
 //           {products.map((item, i) => (
-//             <ProductCard key={i}>
-//               <ProductImage src={placeholderImg} alt={`Card ${i + 1}`} />
-//               <ProductText>
-//                 {item.name}<br />
-//                 Price: ${item.market_value || item.marketValue}
-//               </ProductText>
-//             </ProductCard>
+//             <Link
+//               to={`/product/${item.id}`}
+//               key={item.id}
+//               style={{ textDecoration: "none" }}
+//             >
+//               <ProductCard>
+//                 <ProductImage src={placeholderImg} alt={`Card ${i + 1}`} />
+//                 <ProductText>
+//                   {item.name}<br />
+//                   Price: ${item.market_value || item.marketValue}
+//                 </ProductText>
+//               </ProductCard>
+//             </Link>
 //           ))}
 //         </ProductGrid>
 //       </CenterWrapper>
@@ -152,12 +162,10 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import pokeballImage from "../assets/images/Pokeball.png";
 import LHImage from "../assets/images/luckyhelmetlogo.png";
-import placeholderImg from "../assets/images/Pokeball.png";
+import pokeballImage from "../assets/images/Pokeball.png";
 import SC from "../assets/images/Single Cards Title.png";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase/firebaseConfig";
+import { listProducts } from "../api/products"; // <-- use API
 
 const StyledPage = styled.div`
   width: 100vw;
@@ -236,9 +244,7 @@ const ProductCard = styled.div`
   flex-direction: column;
   align-items: center;
   transition: transform 0.2s ease;
-  &:hover {
-    transform: scale(1.02);
-  }
+  &:hover { transform: scale(1.02); }
 `;
 
 const ProductImage = styled.img`
@@ -246,6 +252,7 @@ const ProductImage = styled.img`
   height: 180px;
   background: white;
   border-radius: 12px;
+  object-fit: contain;
 `;
 
 const ProductText = styled.div`
@@ -259,18 +266,25 @@ const ProductText = styled.div`
 
 export const CardPage = () => {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [err, setErr]           = useState(null);
 
   useEffect(() => {
-    const fetchCards = async () => {
-      const querySnapshot = await getDocs(collection(db, "products"));
-      const items = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setProducts(items);
-    };
-    fetchCards();
+    (async () => {
+      try {
+        // storefront=true => only price>0 & qty>0
+        const items = await listProducts(true);
+        setProducts(items);
+      } catch (e) {
+        setErr(e?.message || "Failed to load products");
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
+
+  if (loading) return <StyledPage><CenterWrapper>Loading…</CenterWrapper></StyledPage>;
+  if (err)      return <StyledPage><CenterWrapper>Oops: {err}</CenterWrapper></StyledPage>;
 
   return (
     <StyledPage>
@@ -291,16 +305,15 @@ export const CardPage = () => {
 
         <ProductGrid>
           {products.map((item, i) => (
-            <Link
-              to={`/product/${item.id}`}
-              key={item.id}
-              style={{ textDecoration: "none" }}
-            >
+            <Link to={`/product/${item.id}`} key={item.id} style={{ textDecoration: "none" }}>
               <ProductCard>
-                <ProductImage src={placeholderImg} alt={`Card ${i + 1}`} />
+                <ProductImage
+                  src={item.imageUrl || pokeballImage}   // placeholder until you add images
+                  alt={item.name || `Card ${i + 1}`}
+                />
                 <ProductText>
                   {item.name}<br />
-                  Price: ${item.market_value || item.marketValue}
+                  Price: ${Number(item.price ?? 0).toFixed(2)}
                 </ProductText>
               </ProductCard>
             </Link>
