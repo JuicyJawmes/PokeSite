@@ -88,15 +88,25 @@ const Section = styled.div`
   width: 50%;
   align-self: center;
 `;
-
 const Input = styled.input`
   padding: 12px;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, 1);
   font-size: 1.2rem;
   background: #f8f8f8;
+  color: #000;            /* <- make text black */
+  caret-color: #000;      /* cursor color */
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   width: 95%;
+
+  &::placeholder { color: #555; }   /* placeholder color */
+
+  /* Chrome/Safari autofill fix */
+  &:-webkit-autofill {
+    -webkit-text-fill-color: #000;
+    box-shadow: 0 0 0px 1000px #f8f8f8 inset;
+    transition: background-color 9999s ease-out 0s;
+  }
 `;
 
 const Select = styled.select`
@@ -105,9 +115,32 @@ const Select = styled.select`
   font-size: 1rem;
   background: #f8f8f8;
   border: 1px solid #ccc;
+  color: #000;           /* <- make text black */
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   width: 100%;
+
+  option { color: #000; background: #fff; }
 `;
+
+// const Input = styled.input`
+//   padding: 12px;
+//   border-radius: 8px;
+//   border: 1px solid rgba(0, 0, 0, 1);
+//   font-size: 1.2rem;
+//   background: #f8f8f8;
+//   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+//   width: 95%;
+// `;
+
+// const Select = styled.select`
+//   padding: 12px;
+//   border-radius: 8px;
+//   font-size: 1rem;
+//   background: #f8f8f8;
+//   border: 1px solid #ccc;
+//   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+//   width: 100%;
+// `;
 
 const TotalRow = styled.div`
   display: flex;
