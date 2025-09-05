@@ -54,4 +54,14 @@ public class ApiExceptionHandler {
     body.put("message", ex.getMessage());
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
   }
+  @ExceptionHandler(InsufficientStockException.class)
+  public ResponseEntity<Map<String, Object>> handleInsufficient(InsufficientStockException ex) {
+    Map<String, Object> body = new HashMap<>();
+    body.put("error", "INSUFFICIENT_STOCK");
+    body.put("productId", ex.getProductId());
+    body.put("name", ex.getName());
+    body.put("available", ex.getAvailable());
+    body.put("requested", ex.getRequested());
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(body); // 409
+  }
 }

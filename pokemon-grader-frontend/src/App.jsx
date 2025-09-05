@@ -54,7 +54,7 @@ function App() {
         <Route path="/product/:productId" element={<ProductPage />} />
         {/* /cart route optional now; the drawer replaces it */}
         <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/confirmation" element={<ConfirmationPage />} />
+        <Route path="/order/:orderId" element={<ConfirmationPage />} />
         <Route path="/product/:productId" element={<ProductPage />} />
       </Routes>
     </>

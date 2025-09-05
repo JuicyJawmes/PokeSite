@@ -1,6 +1,7 @@
 package com.luckyhelmet.order;
 
 import com.google.cloud.firestore.*;
+import com.luckyhelmet.common.InsufficientStockException;
 import com.luckyhelmet.order.dto.CreateOrderRequest;
 import com.luckyhelmet.order.dto.OrderItemRequest;
 import com.luckyhelmet.order.dto.QuoteRequest;
@@ -53,7 +54,11 @@ public class OrderService {
 
   // ---------- CREATE ORDER (transaction: checks & decrements stock) ----------
   public Order create(CreateOrderRequest req) throws ExecutionException, InterruptedException {
-    Order order = db.runTransaction(tx -> {
+    // Use shipping as default billing if billing not provided
+    CreateOrderRequest.Address ship = req.shippingAddress();
+    CreateOrderRequest.Address bill = (req.billingAddress() != null) ? req.billingAddress() : ship;
+
+    return db.runTransaction(tx -> {
       List<OrderItem> orderItems = new ArrayList<>();
       double subtotal = 0.0;
 
@@ -63,8 +68,10 @@ public class OrderService {
         if (!doc.exists()) throw new IllegalStateException("product_not_found:" + line.productId());
 
         int available = toInt(doc.get("quantity"), 0);
-        if (available < line.quantity())
-          throw new IllegalStateException("insufficient_stock:" + line.productId());
+        if (available < line.quantity()) {
+          String name = asString(doc.get("name"));
+          throw new InsufficientStockException(doc.getId(), name, available, line.quantity());
+        }
 
         String name  = asString(doc.get("name"));
         String image = firstNonNullStr(doc.get("imageUrl"), doc.get("image"),
@@ -100,12 +107,12 @@ public class OrderService {
       o.setTotal(total);
       o.setStatus("PENDING");
       o.setCreatedAt(System.currentTimeMillis());
+      o.setShippingAddress(ship);
+      o.setBillingAddress(bill);
 
       tx.set(oref, orderToMap(o));
       return o;
     }).get();
-
-    return order;
   }
 
   public Order get(String id) throws ExecutionException, InterruptedException {
@@ -125,6 +132,8 @@ public class OrderService {
     m.put("total", o.getTotal());
     m.put("status", o.getStatus());
     m.put("createdAt", o.getCreatedAt());
+    if (o.getShippingAddress() != null) m.put("shippingAddress", addressToMap(o.getShippingAddress()));
+    if (o.getBillingAddress()  != null) m.put("billingAddress",  addressToMap(o.getBillingAddress()));
     return m;
   }
 
@@ -143,6 +152,19 @@ public class OrderService {
     return out;
   }
 
+  // Address map <-> record
+  private static Map<String,Object> addressToMap(CreateOrderRequest.Address a) {
+    Map<String,Object> m = new HashMap<>();
+    m.put("name",   a.name());
+    m.put("street", a.street());
+    m.put("city",   a.city());
+    m.put("state",  a.state());
+    m.put("zip",    a.zip());
+    if (a.phone() != null) m.put("phone", a.phone());
+    return m;
+  }
+
+  @SuppressWarnings("unchecked")
   private static Order mapOrder(DocumentSnapshot doc) {
     Order o = new Order();
     o.setId(doc.getId());
@@ -154,6 +176,7 @@ public class OrderService {
     o.setStatus(asString(doc.get("status")));
     o.setCreatedAt(toLong(doc.get("createdAt"), System.currentTimeMillis()));
 
+    // items
     List<Map<String,Object>> raw = (List<Map<String,Object>>) doc.get("items");
     List<OrderItem> items = new ArrayList<>();
     if (raw != null) {
@@ -168,7 +191,28 @@ public class OrderService {
       }
     }
     o.setItems(items);
+
+    // addresses
+    Object shipObj = doc.get("shippingAddress");
+    if (shipObj instanceof Map<?,?> sm) {
+      o.setShippingAddress(mapToAddress((Map<String,Object>) sm));
+    }
+    Object billObj = doc.get("billingAddress");
+    if (billObj instanceof Map<?,?> bm) {
+      o.setBillingAddress(mapToAddress((Map<String,Object>) bm));
+    }
+
     return o;
+  }
+
+  private static CreateOrderRequest.Address mapToAddress(Map<String,Object> m) {
+    String name   = asString(m.get("name"));
+    String street = asString(m.get("street"));
+    String city   = asString(m.get("city"));
+    String state  = asString(m.get("state"));
+    String zip    = asString(m.get("zip"));
+    String phone  = asString(m.get("phone"));
+    return new CreateOrderRequest.Address(name, street, city, state, zip, phone);
   }
 
   private static String firstNonNullStr(Object... xs) {

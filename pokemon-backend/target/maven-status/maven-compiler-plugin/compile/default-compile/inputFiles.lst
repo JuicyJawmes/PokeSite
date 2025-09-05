@@ -1,6 +1,7 @@
 /Users/james/Documents/GitHub/PokeSite/pokemon-backend/src/main/java/com/luckyhelmet/App.java
 /Users/james/Documents/GitHub/PokeSite/pokemon-backend/src/main/java/com/luckyhelmet/HealthController.java
 /Users/james/Documents/GitHub/PokeSite/pokemon-backend/src/main/java/com/luckyhelmet/common/ApiExceptionHandler.java
+/Users/james/Documents/GitHub/PokeSite/pokemon-backend/src/main/java/com/luckyhelmet/common/InsufficientStockException.java
 /Users/james/Documents/GitHub/PokeSite/pokemon-backend/src/main/java/com/luckyhelmet/config/CorsConfig.java
 /Users/james/Documents/GitHub/PokeSite/pokemon-backend/src/main/java/com/luckyhelmet/config/FirebaseConfig.java
 /Users/james/Documents/GitHub/PokeSite/pokemon-backend/src/main/java/com/luckyhelmet/order/Order.java
