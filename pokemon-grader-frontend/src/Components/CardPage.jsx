@@ -1,12 +1,10 @@
 // import React, { useEffect, useState } from "react";
 // import styled from "styled-components";
 // import { Link } from "react-router-dom";
-// import pokeballImage from "../assets/images/Pokeball.png";
 // import LHImage from "../assets/images/luckyhelmetlogo.png";
-// import placeholderImg from "../assets/images/Pokeball.png";
+// import pokeballImage from "../assets/images/Pokeball.png";
 // import SC from "../assets/images/Single Cards Title.png";
-// import { collection, getDocs } from "firebase/firestore";
-// import { db } from "../firebase/firebaseConfig";
+// import { listProducts } from "../api/products"; // <-- use API
 
 // const StyledPage = styled.div`
 //   width: 100vw;
@@ -85,9 +83,7 @@
 //   flex-direction: column;
 //   align-items: center;
 //   transition: transform 0.2s ease;
-//   &:hover {
-//     transform: scale(1.02);
-//   }
+//   &:hover { transform: scale(1.02); }
 // `;
 
 // const ProductImage = styled.img`
@@ -95,6 +91,7 @@
 //   height: 180px;
 //   background: white;
 //   border-radius: 12px;
+//   object-fit: contain;
 // `;
 
 // const ProductText = styled.div`
@@ -108,18 +105,25 @@
 
 // export const CardPage = () => {
 //   const [products, setProducts] = useState([]);
+//   const [loading, setLoading]   = useState(true);
+//   const [err, setErr]           = useState(null);
 
 //   useEffect(() => {
-//     const fetchCards = async () => {
-//       const querySnapshot = await getDocs(collection(db, "products"));
-//       const items = querySnapshot.docs.map(doc => ({
-//         id: doc.id,
-//         ...doc.data()
-//       }));
-//       setProducts(items);
-//     };
-//     fetchCards();
+//     (async () => {
+//       try {
+//         // storefront=true => only price>0 & qty>0
+//         const items = await listProducts(true);
+//         setProducts(items);
+//       } catch (e) {
+//         setErr(e?.message || "Failed to load products");
+//       } finally {
+//         setLoading(false);
+//       }
+//     })();
 //   }, []);
+
+//   if (loading) return <StyledPage><CenterWrapper>Loading…</CenterWrapper></StyledPage>;
+//   if (err)      return <StyledPage><CenterWrapper>Oops: {err}</CenterWrapper></StyledPage>;
 
 //   return (
 //     <StyledPage>
@@ -140,16 +144,15 @@
 
 //         <ProductGrid>
 //           {products.map((item, i) => (
-//             <Link
-//               to={`/product/${item.id}`}
-//               key={item.id}
-//               style={{ textDecoration: "none" }}
-//             >
+//             <Link to={`/product/${item.id}`} key={item.id} style={{ textDecoration: "none" }}>
 //               <ProductCard>
-//                 <ProductImage src={placeholderImg} alt={`Card ${i + 1}`} />
+//                 <ProductImage
+//                   src={item.imageUrl || pokeballImage}   // placeholder until you add images
+//                   alt={item.name || `Card ${i + 1}`}
+//                 />
 //                 <ProductText>
 //                   {item.name}<br />
-//                   Price: ${item.market_value || item.marketValue}
+//                   Price: ${Number(item.price ?? 0).toFixed(2)}
 //                 </ProductText>
 //               </ProductCard>
 //             </Link>
@@ -159,13 +162,14 @@
 //     </StyledPage>
 //   );
 // };
+// src/pages/CardPage.jsx
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import LHImage from "../assets/images/luckyhelmetlogo.png";
 import pokeballImage from "../assets/images/Pokeball.png";
 import SC from "../assets/images/Single Cards Title.png";
-import { listProducts } from "../api/products"; // <-- use API
+import { listProducts } from "../api/products"; // uses VITE_API_BASE
 
 const StyledPage = styled.div`
   width: 100vw;
@@ -197,7 +201,7 @@ const NavBar = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width:100%;
+  width: 100%;
   gap: 2rem;
   margin-bottom: 3rem;
   position: relative;
@@ -272,7 +276,9 @@ export const CardPage = () => {
   useEffect(() => {
     (async () => {
       try {
-        // storefront=true => only price>0 & qty>0
+        setErr(null);
+        setLoading(true);
+        // storefront=true => only show purchasable items (price>0, qty>0)
         const items = await listProducts(true);
         setProducts(items);
       } catch (e) {
@@ -283,8 +289,21 @@ export const CardPage = () => {
     })();
   }, []);
 
-  if (loading) return <StyledPage><CenterWrapper>Loading…</CenterWrapper></StyledPage>;
-  if (err)      return <StyledPage><CenterWrapper>Oops: {err}</CenterWrapper></StyledPage>;
+  if (loading) {
+    return (
+      <StyledPage>
+        <CenterWrapper>Loading…</CenterWrapper>
+      </StyledPage>
+    );
+  }
+
+  if (err) {
+    return (
+      <StyledPage>
+        <CenterWrapper style={{ color: "#ffb3b3" }}>Error: {err}</CenterWrapper>
+      </StyledPage>
+    );
+  }
 
   return (
     <StyledPage>
@@ -308,8 +327,9 @@ export const CardPage = () => {
             <Link to={`/product/${item.id}`} key={item.id} style={{ textDecoration: "none" }}>
               <ProductCard>
                 <ProductImage
-                  src={item.imageUrl || pokeballImage}   // placeholder until you add images
+                  src={item.imageUrl || pokeballImage}
                   alt={item.name || `Card ${i + 1}`}
+                  onError={(e) => (e.currentTarget.src = pokeballImage)}
                 />
                 <ProductText>
                   {item.name}<br />

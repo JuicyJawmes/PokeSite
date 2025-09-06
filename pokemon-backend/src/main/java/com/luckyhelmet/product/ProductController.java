@@ -1,11 +1,16 @@
 package com.luckyhelmet.product;
 
 import com.luckyhelmet.product.dto.ProductRequest;
+import com.luckyhelmet.product.dto.BulkUpdateRequest;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 @RestController
@@ -14,6 +19,9 @@ import java.util.concurrent.ExecutionException;
 public class ProductController {
 
   private final ProductService svc;
+
+  @Value("${app.adminToken:}")
+  private String adminToken;
 
   public ProductController(ProductService svc) {
     this.svc = svc;
@@ -25,22 +33,17 @@ public class ProductController {
     List<Product> all = svc.list();
     if (Boolean.TRUE.equals(storefront)) {
       return all.stream()
-        .filter(p -> p.getPrice() > 0)
-        .filter(p -> p.getQuantity() > 0)
-        .toList();
+          .filter(p -> p.getPrice() > 0)
+          .filter(p -> p.getQuantity() > 0)
+          .toList();
     }
     return all;
   }
 
-  // @GetMapping("/products")
-  // public List<Product> list() throws ExecutionException, InterruptedException {
-  //   return svc.list();
-  // }
-
+  // Single product (fixed path + use svc)
   @GetMapping("/products/{id}")
-  public ResponseEntity<Product> get(@PathVariable String id)
-      throws ExecutionException, InterruptedException {
-    Product p = svc.get(id);
+  public ResponseEntity<Product> getOne(@PathVariable String id) throws Exception {
+    Product p = svc.getById(id);
     return (p == null) ? ResponseEntity.notFound().build() : ResponseEntity.ok(p);
   }
 
@@ -61,5 +64,18 @@ public class ProductController {
       throws ExecutionException, InterruptedException {
     svc.delete(id);
     return ResponseEntity.noContent().build();
+  }
+
+  // Admin bulk update (token-protected)
+  @PostMapping("/admin/products/bulk")
+  public ResponseEntity<?> bulkUpdateProducts(
+      @RequestHeader(name = "X-Admin-Token", required = false) String token,
+      @Valid @RequestBody BulkUpdateRequest body
+  ) throws Exception {
+    if (adminToken == null || adminToken.isBlank() || !Objects.equals(adminToken, token)) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "forbidden"));
+    }
+    svc.applyBulkPatches(body.getPatches());
+    return ResponseEntity.ok(Map.of("updated", body.getPatches().size()));
   }
 }
