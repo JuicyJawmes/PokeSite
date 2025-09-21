@@ -1,0 +1,9 @@
+
+# --- secrets ---
+pokemon-backend/src/main/resources/application.properties
+pokemon-backend/src/main/resources/application-local.properties
+pokemon-backend/src/main/resources/application-*.local.properties
+
+# --- build artifacts ---
+/target/
+**/target/
