@@ -52,25 +52,38 @@ public class OrderService {
     return new QuoteResponse(items, round2(subtotal), tax, shipping, total);
   }
 
-  // ---------- CREATE ORDER (transaction: checks & decrements stock) ----------
+  // ---------- CREATE ORDER (transaction: checks then decrements stock) ----------
   public Order create(CreateOrderRequest req) throws ExecutionException, InterruptedException {
-    // Use shipping as default billing if billing not provided
-    CreateOrderRequest.Address ship = req.shippingAddress();
-    CreateOrderRequest.Address bill = (req.billingAddress() != null) ? req.billingAddress() : ship;
-
-    return db.runTransaction(tx -> {
+    Order order = db.runTransaction(tx -> {
       List<OrderItem> orderItems = new ArrayList<>();
       double subtotal = 0.0;
 
-      for (OrderItemRequest line : req.items()) {
-        DocumentReference pref = products.document(line.productId());
+      // Collect all reads first (no writes yet)
+      class Line {
+        final DocumentReference pref;
+        final int requested;
+        final int available;
+        Line(DocumentReference pref, int requested, int available) {
+          this.pref = pref; this.requested = requested; this.available = available;
+        }
+      }
+      List<Line> lines = new ArrayList<>();
+
+        if (req.getItems() == null || req.getItems().isEmpty()) {
+        throw new IllegalStateException("no_items");
+        }
+
+        for (CreateOrderRequest.OrderItemRequest line : req.getItems()) {
+        DocumentReference pref = products.document(line.getProductId());
         DocumentSnapshot doc = tx.get(pref).get();
-        if (!doc.exists()) throw new IllegalStateException("product_not_found:" + line.productId());
+        if (!doc.exists()) {
+            throw new IllegalStateException("product_not_found:" + line.getProductId());
+        }
 
         int available = toInt(doc.get("quantity"), 0);
-        if (available < line.quantity()) {
-          String name = asString(doc.get("name"));
-          throw new InsufficientStockException(doc.getId(), name, available, line.quantity());
+        if (available < line.getQuantity()) {
+            String name = asString(doc.get("name"));
+            throw new InsufficientStockException(doc.getId(), name, available, line.getQuantity());
         }
 
         String name  = asString(doc.get("name"));
@@ -78,18 +91,23 @@ public class OrderService {
             "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png");
         double price = firstNonNullDouble(doc.get("price"), doc.get("marketValue"), 0.0);
 
+        // collect for writes after all reads
+        lines.add(new Line(pref, line.getQuantity(), available));
+
         OrderItem oi = new OrderItem();
         oi.setProductId(doc.getId());
         oi.setName(name);
         oi.setImageUrl(image);
         oi.setPrice(price);
-        oi.setQuantity(line.quantity());
+        oi.setQuantity(line.getQuantity());
         orderItems.add(oi);
 
-        subtotal += price * line.quantity();
+        subtotal += price * line.getQuantity();
+        }
 
-        // decrement stock
-        tx.update(pref, "quantity", available - line.quantity());
+      // After all reads, do writes
+      for (Line l : lines) {
+        tx.update(l.pref, "quantity", l.available - l.requested);
       }
 
       double tax = round2(subtotal * taxRate);
@@ -99,7 +117,7 @@ public class OrderService {
       Order o = new Order();
       DocumentReference oref = orders.document();
       o.setId(oref.getId());
-      o.setEmail(req.email());
+      o.setEmail(req.getEmail());
       o.setItems(orderItems);
       o.setSubtotal(round2(subtotal));
       o.setTax(tax);
@@ -107,12 +125,18 @@ public class OrderService {
       o.setTotal(total);
       o.setStatus("PENDING");
       o.setCreatedAt(System.currentTimeMillis());
-      o.setShippingAddress(ship);
-      o.setBillingAddress(bill);
 
-      tx.set(oref, orderToMap(o));
+      // Save as map; include addresses as maps
+      Map<String,Object> data = orderToMap(o);
+      data.put("shippingAddress", mapReqAddress(req.getShippingAddress()));
+      CreateOrderRequest.Address bill = (req.getBillingAddress() != null) ? req.getBillingAddress() : req.getShippingAddress();
+      data.put("billingAddress", mapReqAddress(bill));
+
+      tx.set(oref, data);
       return o;
     }).get();
+
+    return order;
   }
 
   public Order get(String id) throws ExecutionException, InterruptedException {
@@ -132,8 +156,19 @@ public class OrderService {
     m.put("total", o.getTotal());
     m.put("status", o.getStatus());
     m.put("createdAt", o.getCreatedAt());
-    if (o.getShippingAddress() != null) m.put("shippingAddress", addressToMap(o.getShippingAddress()));
-    if (o.getBillingAddress()  != null) m.put("billingAddress",  addressToMap(o.getBillingAddress()));
+    return m;
+  }
+
+  // POJO Address -> Map<String,Object>
+  private static Map<String,Object> mapReqAddress(CreateOrderRequest.Address a) {
+    if (a == null) return null;
+    Map<String,Object> m = new HashMap<>();
+    m.put("name",   a.getName());
+    m.put("street", a.getStreet());
+    m.put("city",   a.getCity());
+    m.put("state",  a.getState());
+    m.put("zip",    a.getZip());
+    if (a.getPhone() != null) m.put("phone", a.getPhone());
     return m;
   }
 
@@ -152,18 +187,6 @@ public class OrderService {
     return out;
   }
 
-  // Address map <-> record
-  private static Map<String,Object> addressToMap(CreateOrderRequest.Address a) {
-    Map<String,Object> m = new HashMap<>();
-    m.put("name",   a.name());
-    m.put("street", a.street());
-    m.put("city",   a.city());
-    m.put("state",  a.state());
-    m.put("zip",    a.zip());
-    if (a.phone() != null) m.put("phone", a.phone());
-    return m;
-  }
-
   @SuppressWarnings("unchecked")
   private static Order mapOrder(DocumentSnapshot doc) {
     Order o = new Order();
@@ -176,7 +199,6 @@ public class OrderService {
     o.setStatus(asString(doc.get("status")));
     o.setCreatedAt(toLong(doc.get("createdAt"), System.currentTimeMillis()));
 
-    // items
     List<Map<String,Object>> raw = (List<Map<String,Object>>) doc.get("items");
     List<OrderItem> items = new ArrayList<>();
     if (raw != null) {
@@ -192,27 +214,8 @@ public class OrderService {
     }
     o.setItems(items);
 
-    // addresses
-    Object shipObj = doc.get("shippingAddress");
-    if (shipObj instanceof Map<?,?> sm) {
-      o.setShippingAddress(mapToAddress((Map<String,Object>) sm));
-    }
-    Object billObj = doc.get("billingAddress");
-    if (billObj instanceof Map<?,?> bm) {
-      o.setBillingAddress(mapToAddress((Map<String,Object>) bm));
-    }
-
+    // If your Order model has address fields, you can read the raw maps and map them later if needed.
     return o;
-  }
-
-  private static CreateOrderRequest.Address mapToAddress(Map<String,Object> m) {
-    String name   = asString(m.get("name"));
-    String street = asString(m.get("street"));
-    String city   = asString(m.get("city"));
-    String state  = asString(m.get("state"));
-    String zip    = asString(m.get("zip"));
-    String phone  = asString(m.get("phone"));
-    return new CreateOrderRequest.Address(name, street, city, state, zip, phone);
   }
 
   private static String firstNonNullStr(Object... xs) {
