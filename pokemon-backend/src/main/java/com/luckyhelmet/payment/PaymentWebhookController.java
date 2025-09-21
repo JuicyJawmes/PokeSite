@@ -8,34 +8,36 @@ import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.net.Webhook;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/payments")
+@ConditionalOnProperty(prefix = "stripe", name = "webhook.secret", matchIfMissing = false)
 public class PaymentWebhookController {
 
   private final Firestore db;
+  private final String webhookSecret;
 
-  @Value("${stripe.webhook.secret}")
-  private String webhookSecret;
-
-  public PaymentWebhookController(Firestore db) { this.db = db; }
+  public PaymentWebhookController(Firestore db,
+      @Value("${stripe.webhook.secret}") String webhookSecret) {
+    this.db = db;
+    this.webhookSecret = webhookSecret;
+  }
 
   @PostMapping("/webhook")
-  public ResponseEntity<String> handle(@RequestHeader("Stripe-Signature") String sigHeader,
-                                       @RequestBody String payload) {
+  public ResponseEntity<String> handle(
+      @RequestHeader("Stripe-Signature") String sigHeader,
+      @RequestBody String payload) {
     try {
       Event event = Webhook.constructEvent(payload, sigHeader, webhookSecret);
 
       switch (event.getType()) {
         case "payment_intent.succeeded" -> {
-          // OPTIONAL: if you generated an order earlier and attached an orderId
-          // to PaymentIntent metadata, you can mark it PAID here.
-          var pi = (com.stripe.model.PaymentIntent) event.getDataObjectDeserializer()
-                  .getObject().orElse(null);
-          if (pi != null) {
-            String orderId = pi.getMetadata().get("orderId"); // set this when you create the PI (optional)
+          var obj = event.getDataObjectDeserializer().getObject().orElse(null);
+          if (obj instanceof com.stripe.model.PaymentIntent pi) {
+            String orderId = pi.getMetadata().get("orderId");
             if (orderId != null && !orderId.isBlank()) {
               DocumentReference ref = db.collection("orders").document(orderId);
               ref.update("status", "PAID");
@@ -43,7 +45,7 @@ public class PaymentWebhookController {
           }
         }
         case "payment_intent.payment_failed" -> {
-          // log / alert if needed
+          // optional: log/alert
         }
       }
       return ResponseEntity.ok("ok");

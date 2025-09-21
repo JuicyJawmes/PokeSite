@@ -30,7 +30,7 @@ dist-ssr
 !.env.*.example
 
 # --- Spring Boot secrets ---
-**/src/main/resources/application.properties
-**/src/main/resources/application-*.properties
-!**/src/main/resources/application-example.properties
+/pokemon-backend/src/main/resources/application.properties
+/pokemon-backend/src/main/resources/application-local.properties
+/pokemon-backend/src/main/resources/application-*.local.properties
 
