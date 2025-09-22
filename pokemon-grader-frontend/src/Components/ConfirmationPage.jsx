@@ -5,18 +5,39 @@ import { Link, useLocation, useParams } from "react-router-dom";
 
 const API_BASE = import.meta.env?.VITE_API_BASE || "http://localhost:8080";
 
+/* Page fills the viewport and centers everything */
 const PageWrapper = styled.div`
-  padding: 2rem;
-  background: #030f2d;
+  width: 100vw;
   min-height: 100vh;
+  background: #030f2d;
   color: white;
+
+  /* hard center regardless of outer layout */
+  display: grid;
+  place-items: center;
+
+  padding: 2rem 1rem;
+`;
+
+/* Constrain width + center text for the headers/links */
+const Container = styled.div`
+  width: min(92vw, 900px);
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* center the headings and buttons */
   text-align: center;
 `;
 
 const Card = styled.div`
+  width: 100%;
   max-width: 720px;
-  margin: 1.5rem auto 0;
+  margin-top: 1.25rem;
+
+  /* keep content inside the card left-aligned */
   text-align: left;
+
   background: #0a1f44;
   border-radius: 14px;
   padding: 1.25rem 1.5rem;
@@ -45,7 +66,8 @@ function useOrderId() {
   const { orderId: paramId } = useParams();
   const { search } = useLocation();
   const queryId = new URLSearchParams(search).get("id");
-  const storedId = typeof window !== "undefined" ? sessionStorage.getItem("lastOrderId") : null;
+  const storedId =
+    typeof window !== "undefined" ? sessionStorage.getItem("lastOrderId") : null;
   return paramId || queryId || storedId || null;
 }
 
@@ -77,75 +99,108 @@ export default function ConfirmationPage() {
 
   return (
     <PageWrapper>
-      <h1>🎉 Order Confirmed!</h1>
-      {!id && (
-        <>
-          <p>We couldn’t find an order id. If you just placed an order, please try again from your cart.</p>
-          <Link to="/" style={{ color: "#fff700", fontWeight: "bold" }}>Return Home</Link>
-          <Card><Muted>Tip: if you navigate here without an id, store it in sessionStorage:
-            <br/> <code>sessionStorage.setItem("lastOrderId", order.id)</code></Muted></Card>
-        </>
-      )}
+      <Container>
+        <h1>🎉 Order Confirmed!</h1>
 
-      {id && (
-        <>
-          <p>Thank you! Your order <code style={{ color:"#fff700" }}>{id}</code> has been placed.</p>
-
-          {loading && <Muted>Loading order details…</Muted>}
-          {err && <div style={{ color: "#ff6b6b", fontWeight: 700 }}>Error: {err}</div>}
-
-          {order && (
+        {!id && (
+          <>
+            <p>
+              We couldn’t find an order id. If you just placed an order, please try
+              again from your cart.
+            </p>
+            <Link to="/" style={{ color: "#fff700", fontWeight: "bold" }}>
+              Return Home
+            </Link>
             <Card>
-              <h3 style={{ marginTop: 0 }}>Order Summary</h3>
-              <Muted>Placed: {order.createdAt ? new Date(order.createdAt).toLocaleString() : "—"}</Muted>
-
-              <Divider />
-
-              <div>
-                {order.items?.map((i) => (
-                  <Row key={i.productId}>
-                    <span>{i.name} ×{i.quantity}</span>
-                    <span>${(i.price * i.quantity).toFixed(2)}</span>
-                  </Row>
-                ))}
-              </div>
-
-              <Divider />
-
-              <Row>
-                <span>Subtotal</span>
-                <span>${(order.subtotal ?? 0).toFixed(2)}</span>
-              </Row>
-              <Row>
-                <span>Shipping</span>
-                <span>{(order.shipping ?? 0) === 0 ? "Free" : `$${(order.shipping ?? 0).toFixed(2)}`}</span>
-              </Row>
-              <Row>
-                <span>Tax</span>
-                <span>${(order.tax ?? 0).toFixed(2)}</span>
-              </Row>
-
-              <Divider />
-
-              <Row style={{ fontSize: "1.15rem" }}>
-                <span>Total</span>
-                <span>${(order.total ?? 0).toFixed(2)}</span>
-              </Row>
-
-              {order.email && (
-                <>
-                  <Divider />
-                  <Muted>Confirmation sent to: {order.email}</Muted>
-                </>
-              )}
+              <Muted>
+                Tip: if you navigate here without an id, store it in sessionStorage:
+                <br />
+                <code>sessionStorage.setItem("lastOrderId", order.id)</code>
+              </Muted>
             </Card>
-          )}
+          </>
+        )}
 
-          <p style={{ marginTop: "1.25rem" }}>
-            <Link to="/" style={{ color: "#fff700", fontWeight: "bold" }}>Return Home</Link>
-          </p>
-        </>
-      )}
+        {id && (
+          <>
+            <p>
+              Thank you! Your order{" "}
+              <code style={{ color: "#fff700" }}>{id}</code> has been placed.
+            </p>
+
+            {loading && <Muted>Loading order details…</Muted>}
+            {err && (
+              <div style={{ color: "#ff6b6b", fontWeight: 700 }}>
+                Error: {err}
+              </div>
+            )}
+
+            {order && (
+              <Card>
+                <h3 style={{ marginTop: 0 }}>Order Summary</h3>
+                <Muted>
+                  Placed:{" "}
+                  {order.createdAt
+                    ? new Date(order.createdAt).toLocaleString()
+                    : "—"}
+                </Muted>
+
+                <Divider />
+
+                <div>
+                  {order.items?.map((i) => (
+                    <Row key={i.productId}>
+                      <span>
+                        {i.name} ×{i.quantity}
+                      </span>
+                      <span>${(i.price * i.quantity).toFixed(2)}</span>
+                    </Row>
+                  ))}
+                </div>
+
+                <Divider />
+
+                <Row>
+                  <span>Subtotal</span>
+                  <span>${(order.subtotal ?? 0).toFixed(2)}</span>
+                </Row>
+                <Row>
+                  <span>Shipping</span>
+                  <span>
+                    {(order.shipping ?? 0) === 0
+                      ? "Free"
+                      : `$${(order.shipping ?? 0).toFixed(2)}`}
+                  </span>
+                </Row>
+                <Row>
+                  <span>Tax</span>
+                  <span>${(order.tax ?? 0).toFixed(2)}</span>
+                </Row>
+
+                <Divider />
+
+                <Row style={{ fontSize: "1.15rem" }}>
+                  <span>Total</span>
+                  <span>${(order.total ?? 0).toFixed(2)}</span>
+                </Row>
+
+                {order.email && (
+                  <>
+                    <Divider />
+                    <Muted>Confirmation sent to: {order.email}</Muted>
+                  </>
+                )}
+              </Card>
+            )}
+
+            <p style={{ marginTop: "1.25rem" }}>
+              <Link to="/" style={{ color: "#fff700", fontWeight: "bold" }}>
+                Return Home
+              </Link>
+            </p>
+          </>
+        )}
+      </Container>
     </PageWrapper>
   );
 }
