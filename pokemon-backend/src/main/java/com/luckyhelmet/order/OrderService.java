@@ -53,91 +53,91 @@ public class OrderService {
   }
 
   // ---------- CREATE ORDER (transaction: checks then decrements stock) ----------
-  public Order create(CreateOrderRequest req) throws ExecutionException, InterruptedException {
-    Order order = db.runTransaction(tx -> {
-      List<OrderItem> orderItems = new ArrayList<>();
-      double subtotal = 0.0;
+public Order create(CreateOrderRequest req) throws ExecutionException, InterruptedException {
+  return db.runTransaction(tx -> {
+    List<OrderItem> orderItems = new ArrayList<>();
+    double subtotal = 0.0;
 
-      // Collect all reads first (no writes yet)
-      class Line {
-        final DocumentReference pref;
-        final int requested;
-        final int available;
-        Line(DocumentReference pref, int requested, int available) {
-          this.pref = pref; this.requested = requested; this.available = available;
-        }
+    // Collect all reads first (no writes yet)
+    class Line {
+      final DocumentReference pref;
+      final int requested;
+      final int available;
+      Line(DocumentReference pref, int requested, int available) {
+        this.pref = pref; this.requested = requested; this.available = available;
       }
-      List<Line> lines = new ArrayList<>();
+    }
+    List<Line> lines = new ArrayList<>();
 
-        if (req.getItems() == null || req.getItems().isEmpty()) {
-        throw new IllegalStateException("no_items");
-        }
+    if (req.getItems() == null || req.getItems().isEmpty()) {
+      throw new IllegalStateException("no_items");
+    }
 
-        for (CreateOrderRequest.OrderItemRequest line : req.getItems()) {
-        DocumentReference pref = products.document(line.getProductId());
-        DocumentSnapshot doc = tx.get(pref).get();
-        if (!doc.exists()) {
-            throw new IllegalStateException("product_not_found:" + line.getProductId());
-        }
-
-        int available = toInt(doc.get("quantity"), 0);
-        if (available < line.getQuantity()) {
-            String name = asString(doc.get("name"));
-            throw new InsufficientStockException(doc.getId(), name, available, line.getQuantity());
-        }
-
-        String name  = asString(doc.get("name"));
-        String image = firstNonNullStr(doc.get("imageUrl"), doc.get("image"),
-            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png");
-        double price = firstNonNullDouble(doc.get("price"), doc.get("marketValue"), 0.0);
-
-        // collect for writes after all reads
-        lines.add(new Line(pref, line.getQuantity(), available));
-
-        OrderItem oi = new OrderItem();
-        oi.setProductId(doc.getId());
-        oi.setName(name);
-        oi.setImageUrl(image);
-        oi.setPrice(price);
-        oi.setQuantity(line.getQuantity());
-        orderItems.add(oi);
-
-        subtotal += price * line.getQuantity();
-        }
-
-      // After all reads, do writes
-      for (Line l : lines) {
-        tx.update(l.pref, "quantity", l.available - l.requested);
+    for (CreateOrderRequest.OrderItemRequest line : req.getItems()) {
+      DocumentReference pref = products.document(line.getProductId());
+      DocumentSnapshot doc = tx.get(pref).get();
+      if (!doc.exists()) {
+        throw new IllegalStateException("product_not_found:" + line.getProductId());
       }
 
-      double tax = round2(subtotal * taxRate);
-      double shipping = round2(shippingFlat);
-      double total = round2(subtotal + tax + shipping);
+      int available = toInt(doc.get("quantity"), 0);
+      if (available < line.getQuantity()) {
+        String name = asString(doc.get("name"));
+        throw new InsufficientStockException(doc.getId(), name, available, line.getQuantity());
+      }
 
-      Order o = new Order();
-      DocumentReference oref = orders.document();
-      o.setId(oref.getId());
-      o.setEmail(req.getEmail());
-      o.setItems(orderItems);
-      o.setSubtotal(round2(subtotal));
-      o.setTax(tax);
-      o.setShipping(shipping);
-      o.setTotal(total);
-      o.setStatus("PENDING");
-      o.setCreatedAt(System.currentTimeMillis());
+      String name  = asString(doc.get("name"));
+      String image = firstNonNullStr(doc.get("imageUrl"), doc.get("image"),
+          "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png");
+      double price = firstNonNullDouble(doc.get("price"), doc.get("marketValue"), 0.0);
 
-      // Save as map; include addresses as maps
-      Map<String,Object> data = orderToMap(o);
-      data.put("shippingAddress", mapReqAddress(req.getShippingAddress()));
-      CreateOrderRequest.Address bill = (req.getBillingAddress() != null) ? req.getBillingAddress() : req.getShippingAddress();
-      data.put("billingAddress", mapReqAddress(bill));
+      // collect for writes after all reads
+      lines.add(new Line(pref, line.getQuantity(), available));
 
-      tx.set(oref, data);
-      return o;
-    }).get();
+      OrderItem oi = new OrderItem();
+      oi.setProductId(doc.getId());
+      oi.setName(name);
+      oi.setImageUrl(image);
+      oi.setPrice(price);
+      oi.setQuantity(line.getQuantity());
+      orderItems.add(oi);
 
-    return order;
-  }
+      subtotal += price * line.getQuantity();
+    }
+
+    // After all reads, do writes
+    for (Line l : lines) {
+      tx.update(l.pref, "quantity", l.available - l.requested);
+    }
+
+    double tax = round2(subtotal * taxRate);
+    double shipping = round2(shippingFlat);
+    double total = round2(subtotal + tax + shipping);
+
+    Order o = new Order();
+    DocumentReference oref = orders.document();
+    o.setId(oref.getId());
+    o.setEmail(req.getEmail());
+    o.setItems(orderItems);
+    o.setSubtotal(round2(subtotal));
+    o.setTax(tax);
+    o.setShipping(shipping);
+    o.setTotal(total);
+    o.setStatus("PENDING");
+    o.setCreatedAt(System.currentTimeMillis());
+
+    Map<String,Object> data = orderToMap(o);
+    data.put("shippingAddress", mapReqAddress(req.getShippingAddress()));
+    CreateOrderRequest.Address bill = (req.getBillingAddress() != null) ? req.getBillingAddress() : req.getShippingAddress();
+    data.put("billingAddress", mapReqAddress(bill));
+
+    tx.set(oref, data);
+    return o;
+  }).get();
+}
+
+//     return order;
+//   }
 
   public Order get(String id) throws ExecutionException, InterruptedException {
     DocumentSnapshot doc = orders.document(id).get().get();

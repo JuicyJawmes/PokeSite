@@ -58,7 +58,7 @@ const states = ["","AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","
 "LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA",
 "RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"];
 
-/* ---------- Payment submitter that lives inside <Elements> so hooks work ---------- */
+/* ---------- Payment submitter (inside <Elements>) ---------- */
 function PayAndPlaceOrderButton({
   email, lines, shippingAddress, billingAddress,
   onSuccess, setErr, setLoading, canSubmit, clientSecret
@@ -75,17 +75,13 @@ function PayAndPlaceOrderButton({
       setErr("Payment not ready. Please wait a moment and try again.");
       return;
     }
-
     try {
       setLoading(true);
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         redirect: "if_required",
       });
-      if (error) {
-        setErr(error.message || "Payment failed");
-        return;
-      }
+      if (error) { setErr(error.message || "Payment failed"); return; }
       if (paymentIntent?.status === "succeeded") {
         const order = await createOrder(email, lines, shippingAddress, billingAddress);
         onSuccess(order);
@@ -100,12 +96,8 @@ function PayAndPlaceOrderButton({
   };
 
   return (
-    <Button
-      type="button"
-      onClick={handleClick}
-      disabled={!stripe || !canSubmit || !clientSecret}
-    >
-      Pay &amp; Place Order
+    <Button type="button" onClick={handleClick} disabled={!stripe || !canSubmit || !clientSecret}>
+      Place Order
     </Button>
   );
 }
@@ -121,10 +113,7 @@ export default function CheckoutPage() {
   );
 
   const [formData, setFormData] = useState({
-    // keep both fullName (for browser heuristics) and name (for backend)
-    fullName: "",
-    name: "",
-    email: "", phone: "",
+    name: "", email: "", phone: "",
     shippingStreet: "", shippingCity: "", shippingState: "", shippingZip: "",
     billingStreet: "", billingCity: "", billingState: "", billingZip: "",
   });
@@ -162,30 +151,45 @@ export default function CheckoutPage() {
   const handleChange = (e) => setFormData(p => ({ ...p, [e.target.name]: e.target.value }));
 
   const shippingAddress = {
-    name: formData.fullName || formData.name,
+    name: formData.name,
     street: formData.shippingStreet, city: formData.shippingCity,
     state: formData.shippingState, zip: formData.shippingZip, phone: formData.phone
   };
   const billingAddress = useDifferentBilling ? {
-    name: formData.fullName || formData.name,
+    name: formData.name,
     street: formData.billingStreet, city: formData.billingCity,
     state: formData.billingState, zip: formData.billingZip, phone: formData.phone
   } : shippingAddress;
 
   // validation
-  const required = ["email","phone","fullName","shippingStreet","shippingCity","shippingState","shippingZip"];
+  const required = ["email","phone","name","shippingStreet","shippingCity","shippingState","shippingZip"];
   if (useDifferentBilling) required.push("billingStreet","billingCity","billingState","billingZip");
   const formValid =
     required.every(f => !!formData[f]) &&
     isValidZip(formData.shippingZip) &&
     (!useDifferentBilling || isValidZip(formData.billingZip));
 
-  const subtotal = quote?.subtotal ?? cartItems.reduce((s, i) => s + i.price * (i.quantity || 1), 0);
-  const shipping = quote?.shipping ?? 0;
-  const tax = quote?.tax ?? 0;
-  const grandTotal = (quote?.total ?? (subtotal + shipping + tax)).toFixed(2);
+  /* ---------- Use QUOTE for summary when available ---------- */
+  const quoteItems = quote?.items ?? null; // [{id,name,image,price,quantity}]
+  const hasQuote = !!quoteItems;
 
-  if (cartItems.length === 0) return <PageWrapper><Title>Your cart is empty.</Title></PageWrapper>;
+  const fallbackSubtotal = cartItems.reduce((s, i) => s + (Number(i.price) || 0) * (i.quantity || 0), 0);
+  const subtotal = hasQuote ? Number(quote.subtotal || 0) : fallbackSubtotal;
+  const shipping = hasQuote ? Number(quote.shipping || 0) : 0;
+  const tax = hasQuote ? Number(quote.tax || 0) : 0;
+  const grandTotal = hasQuote
+    ? Number(quote.total || 0)
+    : Number((fallbackSubtotal + tax + shipping).toFixed(2));
+
+  // tiny hint if the server adjusted any prices
+  const priceAdjustNotice = hasQuote && cartItems.some(ci => {
+    const qi = quoteItems.find(q => q.id === ci.id);
+    return qi && Number(qi.price) !== Number(ci.price);
+  });
+
+  if (cartItems.length === 0) {
+    return <PageWrapper><Title>Your cart is empty.</Title></PageWrapper>;
+  }
 
   return (
     <PageWrapper>
@@ -197,136 +201,50 @@ export default function CheckoutPage() {
           {loading && <div style={{ color: "#9ad0ff" }}>Processing…</div>}
           {err && <div style={{ color: "#ff6b6b" }}>Error: {err}</div>}
 
-          {/* Contact */}
           <Section>
             <Label>Contact Information</Label>
-            <Input
-              name="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={handleChange}
-              autoComplete="email"
-              inputMode="email"
-            />
-            <Input
-              name="phone"
-              placeholder="Phone Number"
-              value={formData.phone}
-              onChange={handleChange}
-              autoComplete="tel"
-              inputMode="tel"
-            />
+            <Input autoComplete="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} />
+            <Input autoComplete="tel" name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleChange} />
           </Section>
 
-          {/* Shipping */}
           <Section>
             <Label>Shipping Address</Label>
-            <Input
-              name="fullName"
-              placeholder="Full Name"
-              value={formData.fullName}
-              onChange={(e) => {
-                const v = e.target.value;
-                setFormData(p => ({ ...p, fullName: v, name: v })); // keep legacy "name" in sync
-              }}
-              autoComplete="shipping name"
-            />
-            <Input
-              name="shippingStreet"
-              placeholder="Street"
-              value={formData.shippingStreet}
-              onChange={handleChange}
-              autoComplete="shipping address-line1"
-              autoCapitalize="off"
-              autoCorrect="off"
-            />
-            <Input
-              name="shippingCity"
-              placeholder="City"
-              value={formData.shippingCity}
-              onChange={handleChange}
-              autoComplete="shipping address-level2"
-            />
+            <Input autoComplete="name" name="name" placeholder="Full Name" value={formData.name} onChange={handleChange} />
+            <Input autoComplete="address-line1" name="shippingStreet" placeholder="Street" value={formData.shippingStreet} onChange={handleChange} />
+            <Input autoComplete="address-level2" name="shippingCity" placeholder="City" value={formData.shippingCity} onChange={handleChange} />
             <Row>
-              <HalfSelect
-                name="shippingState"
-                value={formData.shippingState}
-                onChange={handleChange}
-                autoComplete="shipping address-level1"
-              >
+              <HalfSelect name="shippingState" value={formData.shippingState} onChange={handleChange}>
                 {states.map(s => <option key={s} value={s}>{s}</option>)}
               </HalfSelect>
-              <HalfInput
-                name="shippingZip"
-                placeholder="ZIP Code"
-                value={formData.shippingZip}
-                onChange={handleChange}
-                autoComplete="shipping postal-code"
-                inputMode="numeric"
-              />
+              <HalfInput autoComplete="postal-code" name="shippingZip" placeholder="ZIP Code" value={formData.shippingZip} onChange={handleChange} />
             </Row>
           </Section>
 
-          {/* Billing */}
           <Section>
             <CheckboxLabel>
-              <input
-                type="checkbox"
-                checked={useDifferentBilling}
-                onChange={() => setUseDifferentBilling(v => !v)}
-              />
+              <input type="checkbox" checked={useDifferentBilling} onChange={() => setUseDifferentBilling(v => !v)} />
               Billing address is different
             </CheckboxLabel>
             {useDifferentBilling && (
               <>
-                <Input
-                  name="billingStreet"
-                  placeholder="Street"
-                  value={formData.billingStreet}
-                  onChange={handleChange}
-                  autoComplete="billing address-line1"
-                  autoCapitalize="off"
-                  autoCorrect="off"
-                />
-                <Input
-                  name="billingCity"
-                  placeholder="City"
-                  value={formData.billingCity}
-                  onChange={handleChange}
-                  autoComplete="billing address-level2"
-                />
+                <Input autoComplete="billing address-line1" name="billingStreet" placeholder="Street" value={formData.billingStreet} onChange={handleChange} />
+                <Input autoComplete="billing address-level2" name="billingCity" placeholder="City" value={formData.billingCity} onChange={handleChange} />
                 <Row>
-                  <HalfSelect
-                    name="billingState"
-                    value={formData.billingState}
-                    onChange={handleChange}
-                    autoComplete="billing address-level1"
-                  >
+                  <HalfSelect name="billingState" value={formData.billingState} onChange={handleChange}>
                     {states.map(s => <option key={s} value={s}>{s}</option>)}
                   </HalfSelect>
-                  <HalfInput
-                    name="billingZip"
-                    placeholder="ZIP Code"
-                    value={formData.billingZip}
-                    onChange={handleChange}
-                    autoComplete="billing postal-code"
-                    inputMode="numeric"
-                  />
+                  <HalfInput autoComplete="billing postal-code" name="billingZip" placeholder="ZIP Code" value={formData.billingZip} onChange={handleChange} />
                 </Row>
               </>
             )}
           </Section>
 
-          {/* Payment */}
           <Section>
             <Label>Payment</Label>
             {!clientSecret ? (
               <div>Loading payment…</div>
             ) : (
-              <Elements
-                stripe={stripePromise}
-                options={{ clientSecret, appearance: { theme: "stripe" } }}
-              >
+              <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: "stripe" } }}>
                 <PaymentElement options={{ layout: "accordion" }} />
                 {!formValid && (
                   <div style={{ marginTop: 8, fontSize: "0.95rem", color: "#ffe082" }}>
@@ -353,17 +271,30 @@ export default function CheckoutPage() {
         <SummaryCard>
           <div>
             <h2>Order Summary</h2>
-            {cartItems.map(item => (
+
+            {/* Prefer server-quoted items for display */}
+            {(quoteItems ?? cartItems).map(item => (
               <div key={item.id}>
-                {item.name} x{item.quantity || 1} – ${(item.price * (item.quantity || 1)).toFixed(2)}
+                {item.name} x{item.quantity || 1} – $
+                {(Number(item.price) * (item.quantity || 1)).toFixed(2)}
               </div>
             ))}
+
+            {priceAdjustNotice && (
+              <div style={{ marginTop: 8, color: "#a15eff", fontSize: ".9rem" }}>
+                Prices updated from server for accuracy.
+              </div>
+            )}
           </div>
+
           <div>
-            <TotalRow><span>Subtotal:</span><span>${subtotal.toFixed(2)}</span></TotalRow>
-            <TotalRow><span>Shipping:</span><span>{shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}</span></TotalRow>
-            <TotalRow><span>Tax:</span><span>${tax.toFixed(2)}</span></TotalRow>
-            <TotalRow><span>Grand Total:</span><span>${grandTotal}</span></TotalRow>
+            <TotalRow><span>Subtotal:</span><span>${Number(subtotal).toFixed(2)}</span></TotalRow>
+            <TotalRow>
+              <span>Shipping:</span>
+              <span>{Number(shipping) === 0 ? "Free" : `$${Number(shipping).toFixed(2)}`}</span>
+            </TotalRow>
+            <TotalRow><span>Tax:</span><span>${Number(tax).toFixed(2)}</span></TotalRow>
+            <TotalRow><span>Grand Total:</span><span>${Number(grandTotal).toFixed(2)}</span></TotalRow>
           </div>
         </SummaryCard>
       </CheckoutLayout>
