@@ -1,0 +1,8 @@
+app:
+taxRate: 0.0825
+shippingFlat: 4.99
+
+
+stripe:
+secretKey: ${STRIPE_SECRET_KEY}
+webhookSecret: ${STRIPE_WEBHOOK_SECRET}

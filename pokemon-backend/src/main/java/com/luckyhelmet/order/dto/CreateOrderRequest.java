@@ -73,24 +73,35 @@
 // }
 package com.luckyhelmet.order.dto;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 
 public class CreateOrderRequest {
-  @Email @NotBlank
+  @NotBlank
+  private String cartId;
+
+  @Email
+  @NotBlank
   private String email;
 
-  @NotNull @Size(min = 1)
+  @NotNull
+  @Size(min = 1)
   private List<OrderItemRequest> items;
 
   @NotNull
-  private Address shippingAddress;     // required
+  private Address shippingAddress;
 
-  private Address billingAddress;      // optional; if null, use shipping
+  private Address billingAddress;
 
-  public CreateOrderRequest() {}
+  // getters/setters
+  public String getCartId() { return cartId; }
+  public void setCartId(String cartId) { this.cartId = cartId; }
 
-  // ---- getters/setters ----
   public String getEmail() { return email; }
   public void setEmail(String email) { this.email = email; }
 
@@ -103,56 +114,37 @@ public class CreateOrderRequest {
   public Address getBillingAddress() { return billingAddress; }
   public void setBillingAddress(Address billingAddress) { this.billingAddress = billingAddress; }
 
-  // ---------- inner types ----------
+  // ---------- nested types (MUST stay inside this class) ----------
   public static class Address {
     @NotBlank private String name;
     @NotBlank private String street;
     @NotBlank private String city;
     @NotBlank private String state;
-    @Pattern(regexp="\\d{5}") private String zip;
-    private String phone; // optional
+    @NotBlank private String zip;
 
-    public Address() {}
-
-    // getters/setters
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-
     public String getStreet() { return street; }
     public void setStreet(String street) { this.street = street; }
-
     public String getCity() { return city; }
     public void setCity(String city) { this.city = city; }
-
     public String getState() { return state; }
     public void setState(String state) { this.state = state; }
-
     public String getZip() { return zip; }
     public void setZip(String zip) { this.zip = zip; }
-
-    public String getPhone() { return phone; }
-    public void setPhone(String phone) { this.phone = phone; }
   }
 
   public static class OrderItemRequest {
-    @NotBlank private String productId;
-    @Min(1)   private int quantity;
+    @NotBlank
+    private String productId;
 
-    /**
-     * Optional: which Firestore collection this item comes from.
-     * Allowed: "products" (default), "sealed_inventory", "new_products"
-     */
-    private String collection;
-
-    public OrderItemRequest() {}
+    @Min(1)
+    @Max(99)
+    private int quantity;
 
     public String getProductId() { return productId; }
     public void setProductId(String productId) { this.productId = productId; }
-
     public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
-
-    public String getCollection() { return collection; }
-    public void setCollection(String collection) { this.collection = collection; }
   }
 }
