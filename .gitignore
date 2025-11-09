@@ -7,3 +7,4 @@ pokemon-backend/src/main/resources/application-*.local.properties
 # --- build artifacts ---
 /target/
 **/target/
+secrets/

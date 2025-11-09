@@ -19,12 +19,15 @@
 //   return r.json();
 // }
 // src/api/orders.ts
-const API_BASE = import.meta.env?.VITE_API_BASE || "http://localhost:8080";
+
+
+// const API_BASE = import.meta.env?.VITE_API_BASE || "http://localhost:8080";
+const BASE = import.meta.env.VITE_API_BASE || "http://localhost:8081";
 
 export type OrderLine = { productId: string; quantity: number };
 
 export async function quoteOrder(lines: OrderLine[]) {
-  const res = await fetch(`${API_BASE}/api/orders/quote`, {
+  const res = await fetch(`${BASE}/api/orders/quote`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ items: lines }),
@@ -50,7 +53,7 @@ export async function createOrder(
 ) {
   const payload = { email, items: lines, shippingAddress, billingAddress };
 
-  const res = await fetch(`${API_BASE}/api/orders`, {
+  const res = await fetch(`${BASE}/api/orders`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
