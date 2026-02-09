@@ -8,3 +8,4 @@ pokemon-backend/src/main/resources/application-*.local.properties
 /target/
 **/target/
 secrets/
+.env
