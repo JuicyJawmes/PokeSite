@@ -75,15 +75,28 @@ public class PaymentController {
   // Use fully-qualified types to dodge import issues
   private final com.luckyhelmet.order.OrderService orderService;
   private final com.google.cloud.firestore.Firestore firestore;
+  private final org.springframework.core.env.Environment environment;
 
   public PaymentController(
       com.luckyhelmet.order.OrderService orderService,
       com.google.cloud.firestore.Firestore firestore,
-      @org.springframework.beans.factory.annotation.Value("${stripe.secretKey}") String secretKey
+      org.springframework.core.env.Environment environment
   ) {
     this.orderService = orderService;
     this.firestore = firestore;
-    com.stripe.Stripe.apiKey = secretKey;
+    this.environment = environment;
+  }
+
+  @javax.annotation.PostConstruct
+  public void initStripeApiKey() {
+    // Prefer resolved Spring property, fall back to raw env var if necessary
+    String key = environment.getProperty("stripe.secretKey");
+    if (key == null || key.isBlank()) {
+      key = environment.getProperty("STRIPE_SECRET_KEY");
+    }
+    if (key != null && !key.isBlank()) {
+      com.stripe.Stripe.apiKey = key;
+    }
   }
 
   /**

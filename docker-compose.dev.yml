@@ -19,7 +19,13 @@ services:
     volumes:
       - ./pokemon-backend:/app
       - ./secrets:/secrets:ro
+    env_file:
+      - .env
     environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=/secrets/firebase-admin.json
+      GOOGLE_APPLICATION_CREDENTIALS: /secrets/firebase-admin.json
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      # SPRING_APPLICATION_JSON sets Spring properties directly from JSON.
+      SPRING_APPLICATION_JSON: '{"stripe":{"secretKey":"${STRIPE_SECRET_KEY}","webhookSecret":"${STRIPE_WEBHOOK_SECRET}"}}'
     ports:
       - "8081:8080"

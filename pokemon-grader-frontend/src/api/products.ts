@@ -87,9 +87,9 @@ function normalizeProduct(x: any): Product {
   };
 }
 
-// Helper to build the path. We intentionally prefix with /api so the Vite
-// dev proxy forwards to backend (or, if api.baseURL is set, axios resolves correctly).
-const path = (p: string) => `/api${p}`;
+// Helper to build the path. `api.baseURL` already points at `/api`, so
+// build paths relative to that base to avoid double `/api` in requests.
+const path = (p: string) => p;
 
 export async function listProducts(storefront = false): Promise<Product[]> {
   const qs = storefront ? "?storefront=true" : "";

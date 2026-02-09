@@ -113,9 +113,15 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-  const removeFromCart = (id, collection = "products") => {
-    const k = `${id}::${collection}`;
-    setCartItems((prev) => prev.filter((i) => i._key !== k));
+  const removeFromCart = (id, collection) => {
+    // If collection is provided, remove that specific keyed item.
+    // If not provided, remove any cart entries that match the id (across collections).
+    if (collection) {
+      const k = `${id}::${collection}`;
+      setCartItems((prev) => prev.filter((i) => i._key !== k));
+    } else {
+      setCartItems((prev) => prev.filter((i) => i.id !== id));
+    }
   };
 
   const clearCart = () => setCartItems([]);
